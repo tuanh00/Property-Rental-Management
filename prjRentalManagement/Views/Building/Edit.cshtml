@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-2">
             @Html.LabelFor(model => model.city, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.city, new { htmlAttributes = new { @class = "form-control" } })
@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-2">
             @Html.LabelFor(model => model.province, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.province, new { htmlAttributes = new { @class = "form-control" } })
@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-2">
             @Html.LabelFor(model => model.postalCode, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.postalCode, new { htmlAttributes = new { @class = "form-control" } })
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-2">
             @Html.LabelFor(model => model.ownerId, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("ownerId", null, htmlAttributes: new { @class = "form-control" })
@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-2">
             @Html.LabelFor(model => model.managerId, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("managerId", null, htmlAttributes: new { @class = "form-control" })
@@ -62,7 +62,7 @@
 
         <div class="form-group mt-3 mb-3">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-success" />
             </div>
         </div>
     </div>
