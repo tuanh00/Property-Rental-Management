@@ -32,10 +32,11 @@ namespace prjRentalManagement.Controllers
                 bool isValid = context.tenants.Any(x => x.email == log.email && x.password == hashedPassword);
                 if (isValid)
                 {
-                    int tenant = context.tenants.SingleOrDefault(i => i.email == log.email).tenantId;
-                    Session["tenant"] = tenant;
+                    Session["tenant"] = context.tenants.SingleOrDefault(i => i.email == log.email).tenantId;
                     Session["owner"] = null;
                     Session["manager"] = null;
+
+                    // Redirect to the Tenant's Dashboard
                     return RedirectToAction("Index", "Tenant");
                 } 
                 else

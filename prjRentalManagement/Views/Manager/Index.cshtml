@@ -1,19 +1,21 @@
 ﻿@model IEnumerable<prjRentalManagement.Models.manager>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Manager Dashboard";
 }
 
+@*Owner can list any property manager account*@
 @if (Session["owner"] != null)
 {
-    <h2>Managers</h2>
+    <h2>All Managers</h2>
     <p>
         @Html.ActionLink("Create New", "Create")
     </p>
 }
+@*Manager can only see personal information*@
 else
 {
-    <h2>Manager Information</h2>
+    <h2>Your Information</h2>
 }
 <table class="table">
 

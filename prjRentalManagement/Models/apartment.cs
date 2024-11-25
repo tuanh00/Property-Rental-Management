@@ -41,7 +41,10 @@ namespace prjRentalManagement.Models
         [Display(Name = "Status")]
         public string status { get; set; }
 
+        [Display(Name = "Building ID")]
         public int buildingId { get; set; }
+
+        [Display(Name = "Tenant ID")]
         public Nullable<int> tenantId { get; set; }
     
         public virtual building building { get; set; }

@@ -1,15 +1,15 @@
 ﻿@model IEnumerable<prjRentalManagement.Models.tenant>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Tenant Dashboard";
 }
-@if (Session["tenant"] == null)
+@if (Session["owner"] != null)
 {
-    <h2>Tenants</h2>
+    <h2>All Tenants</h2>
 }
-@if (Session["tenant"] != null)
+else if (Session["tenant"] != null)
 {
-    <h2>Welcome</h2>
+    <h2>Your Information</h2>
 }
 <table class="table">
     <tr>
@@ -25,7 +25,6 @@
         <th>
             @Html.DisplayNameFor(model => model.phoneNumber)
         </th>
-        <th></th>
     </tr>
 
     @if (Session["tenant"] != null)

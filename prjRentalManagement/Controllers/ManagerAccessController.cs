@@ -17,16 +17,6 @@ namespace prjRentalManagement.Controllers
         // GET: ManagerAccess
         public ActionResult Index()
        {
-        //    // Debug: Check if already logged in
-        //    if (Session["manager"] != null)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine("Redirecting to Manager Dashboard because session exists.");
-        //        Console.WriteLine("Redirecting to Manager Dashboard because session exists.");
-        //        return RedirectToAction("Index", "Manager");
-        //    }
-
-        //    System.Diagnostics.Debug.WriteLine("Manager Login GET request accessed.");
-        //    Console.WriteLine("Manager Login GET request accessed.");
             return View();
         }
 
@@ -48,6 +38,7 @@ namespace prjRentalManagement.Controllers
                     Session["owner"] = null;
                     Session["tenant"] = null;
 
+                    // Redirect to the Manager's Dashboard
                     return RedirectToAction("Index", "Manager");
                 }
                 else

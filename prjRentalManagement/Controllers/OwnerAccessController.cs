@@ -14,8 +14,6 @@ namespace prjRentalManagement.Controllers
 {
     public class OwnerAccessController : Controller
     {
-        //private DbPropertyRentalEntities db = new DbPropertyRentalEntities();
-
         // GET: OwnerAccess
         public ActionResult Index()
         {
@@ -25,11 +23,12 @@ namespace prjRentalManagement.Controllers
         [HttpPost]
         public ActionResult Index(owner log)
         {
-            // Hash the entered password
-            string hashedPassword = ComputeSha256Hash(log.password);
-
+           
             using (var context = new DbPropertyRentalEntities())
             {
+                // Hash the entered password
+                string hashedPassword = ComputeSha256Hash(log.password);
+
                 bool isValid = context.owners.Any(x => x.email == log.email && x.password == hashedPassword);
                 if (isValid)
                 {

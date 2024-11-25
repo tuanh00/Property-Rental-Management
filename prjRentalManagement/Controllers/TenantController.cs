@@ -19,11 +19,27 @@ namespace prjRentalManagement.Controllers
         // GET: Tenant
         public ActionResult Index()
         {
-            if (Session["owner"] == null)
+            // Redirect to Home if no owner or tenant session is active
+            if (Session["owner"] == null && Session["tenant"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            return View(db.tenants.ToList());
+
+            // If owner is logged in, show all tenants
+            if (Session["owner"] != null)
+            {
+                return View(db.tenants.ToList());
+            }
+
+            // If a tenant is logged in, show only their details
+            if (Session["tenant"] != null)
+            {
+                int tenantId = Convert.ToInt32(Session["tenant"]);
+                var tenantInfo = db.tenants.Where(t => t.tenantId == tenantId).ToList();
+                return View(tenantInfo); // Pass only the tenant's info to the view
+            }
+
+            return RedirectToAction("Index", "Home"); // Fallback
         }
 
         // GET: Tenant/Details/5
