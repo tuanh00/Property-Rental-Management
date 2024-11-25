@@ -19,13 +19,11 @@ namespace prjRentalManagement.Models
 
         [Required(ErrorMessage = "Apartment No. is required.")]
         [Range(1, 9999, ErrorMessage = "Apartment No. must be a number between 1 and 9999.")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "Apartment No. must be a numeric value.")]
         [Display(Name = "Apartment No.")]
         public int apartmentNo { get; set; }
 
         [Required(ErrorMessage = "Number of rooms is required.")]
         [Range(1, 300, ErrorMessage = "The number of rooms must be between 1 and 300.")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "Number of rooms must be a numeric value.")]
         [Display(Name = "Number of rooms")]
         public int nbRooms { get; set; }
 

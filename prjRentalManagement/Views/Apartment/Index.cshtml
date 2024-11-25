@@ -7,7 +7,7 @@
 @if (Session["manager"] != null)
 {
     <p>
-        @Html.ActionLink("Create New Apartment", "Create")
+        @Html.ActionLink("Create New Apartment", "Create", null, new { @class = "btn btn-primary" })
     </p>
 }
 <table class="table">
