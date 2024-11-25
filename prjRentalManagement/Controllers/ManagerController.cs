@@ -144,15 +144,30 @@ namespace prjRentalManagement.Controllers
         // GET: Manager/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (Session["owner"] == null)
+            if (id == null)
             {
-                return RedirectToAction("Index", "Home");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             manager manager = db.managers.Find(id);
             if (manager == null)
             {
                 return HttpNotFound();
             }
+            // Managers can only delete their own account
+            if (Session["manager"] != null)
+            {
+                if ((int)Session["manager"] != manager.managerId)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden); // Unauthorized attempt
+                }
+            }
+
+            // Owners can access any manager's delete view
+            if (Session["owner"] == null && Session["manager"] == null)
+            {
+                return RedirectToAction("Index", "Home"); // Redirect if no session
+            }
+
             return View(manager);
         }
 
@@ -161,14 +176,37 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (Session["owner"] == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
             manager manager = db.managers.Find(id);
-            db.managers.Remove(manager);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+
+           if (manager == null)
+            {
+                return HttpNotFound();
+            }
+            // Owner can delete any manager account
+            if (Session["owner"] != null)
+            {
+                db.managers.Remove(manager);
+                db.SaveChanges();
+                return RedirectToAction("Index"); // Redirect owner to manager list
+            }
+            // Manager can delete only their own account
+            if (Session["manager"] != null)
+            {
+                if ((int)Session["manager"] == id)
+                {
+                    db.managers.Remove(manager);
+                    db.SaveChanges();
+                    Session["manager"] = null; // Clear session after self-deletion
+                    return RedirectToAction("Login", "ManagerAccess"); // Redirect to login
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden); // Unauthorized attempt
+                }
+            }
+
+            // If no valid session exists, redirect to home
+            return RedirectToAction("Index", "Home");
         }
 
         protected override void Dispose(bool disposing)

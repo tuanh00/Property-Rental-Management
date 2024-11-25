@@ -135,19 +135,29 @@ namespace prjRentalManagement.Controllers
         // GET: Tenant/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (Session["owner"] == null && Session["tenant"] == null)
+            if (id == null)
             {
-                return RedirectToAction("Index", "Home");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             tenant tenant = db.tenants.Find(id);
             if (tenant == null)
             {
                 return HttpNotFound();
             }
+
+            // Tenants can only delete their own account
             if (Session["tenant"] != null && (int)Session["tenant"] != tenant.tenantId)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden); // Unauthorized access
             }
+
+            // Redirect to Home if no valid session
+            if (Session["owner"] == null && Session["tenant"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(tenant);
         }
 
@@ -157,19 +167,38 @@ namespace prjRentalManagement.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             tenant tenant = db.tenants.Find(id);
-            db.tenants.Remove(tenant);
-            db.SaveChanges();
-            //If an owner deletes a tenant account, redirect back to the tenant list
+
+            if (tenant == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Owner can delete any tenant account
             if (Session["owner"] != null)
             {
-                return RedirectToAction("Index");
+                db.tenants.Remove(tenant);
+                db.SaveChanges();
+                return RedirectToAction("Index"); // Redirect owner to tenant list
             }
-            //if tenant delete their own accont, clear the session and redirect to Home
-            else
+
+            // Tenant can delete only their own account
+            if (Session["tenant"] != null)
             {
-                Session.Clear();
-                return RedirectToAction("Index", "Home");
+                if ((int)Session["tenant"] == id)
+                {
+                    db.tenants.Remove(tenant);
+                    db.SaveChanges();
+                    Session.Clear(); // Clear tenant session
+                    return RedirectToAction("Index", "Home"); // Redirect to homepage
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden); // Unauthorized access
+                }
             }
+
+            // If no valid session exists, redirect to home
+            return RedirectToAction("Index", "Home");
         }
 
         protected override void Dispose(bool disposing)

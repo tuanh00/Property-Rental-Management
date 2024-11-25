@@ -20,9 +20,6 @@ else if (Session["tenant"] != null)
             @Html.DisplayNameFor(model => model.email)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.password)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.phoneNumber)
         </th>
     </tr>
@@ -37,9 +34,6 @@ else if (Session["tenant"] != null)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.password)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.phoneNumber)
@@ -64,14 +58,11 @@ else if (Session["tenant"] != null)
                     @Html.DisplayFor(modelItem => item.email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.password)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.phoneNumber)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.tenantId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.tenantId })
+                    @Html.ActionLink("Details", "Details", new { id = item.tenantId }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.tenantId })
                 </td>
             </tr>

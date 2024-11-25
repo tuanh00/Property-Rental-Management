@@ -9,7 +9,7 @@
 {
     <h2>All Managers</h2>
     <p>
-        @Html.ActionLink("Create New", "Create")
+        @Html.ActionLink("Create New Manager Account", "Create", null, new { @class = "btn btn-primary" })
     </p>
 }
 @*Manager can only see personal information*@
@@ -63,9 +63,6 @@ else
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.password)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.phoneNumber)

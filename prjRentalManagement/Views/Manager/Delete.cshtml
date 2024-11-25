@@ -27,14 +27,6 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.password)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.password)
-        </dd>
-
-        <dt>
             @Html.DisplayNameFor(model => model.phoneNumber)
         </dt>
 
@@ -48,9 +40,11 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-danger" /> |
-            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default"});
+        <div class="form-actions mt-3 mb-3">
+            <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this account?');"/> 
         </div>
     }
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
 </div>

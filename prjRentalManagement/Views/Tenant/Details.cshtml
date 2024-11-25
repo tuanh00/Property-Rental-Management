@@ -24,14 +24,6 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.password)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.password)
-        </dd>
-
-        <dt>
             @Html.DisplayNameFor(model => model.phoneNumber)
         </dt>
 
@@ -42,6 +34,8 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.tenantId }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Edit", "Edit", new { id = Model.tenantId }, new { @class = "btn btn-primary" })
 </p>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
