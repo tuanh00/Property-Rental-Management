@@ -1,0 +1,100 @@
+﻿@model IEnumerable<prjRentalManagement.Models.messageManager>
+@{
+    ViewBag.Title = "Index";
+}
+@*Dynamic Title based on Session*@
+@if (Session["manager"] != null)
+{
+    <h2>Tenant Messages</h2>
+}
+@if (Session["tenant"] != null)
+{
+    <h2>Manager Messages</h2>
+}
+@*Provides a link to create a new message by invoking the Create action of the controller*@
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.message)
+        </th>
+        @*Manager Name: displayed only if the current user is NOT a manager*@
+        @if (Session["manager"] == null)
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.manager.name)
+            </th>
+        }
+        @*Tenant Name: displayed only if the current user is NOT a tenant*@
+        @if (Session["tenant"] == null)
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.tenant.name)
+            </th>
+        }
+        <th></th>
+    </tr>
+    @*--Filtering Messages based on Session*@
+    @*1. For Tenants -> Only messages for logged-in tenant are displayed*@
+    @if (Session["manager"] == null)
+    {
+        foreach (var item in Model.Where(i => i.tenantId == Convert.ToInt32(Session["tenant"])))
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.message)
+                </td>
+                @if (Session["manager"] == null)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.manager.name)
+                    </td>
+                }
+                @if (Session["tenant"] == null)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.tenant.name)
+                    </td>
+                }
+                @*Action links (Edit/Details/Delete) allow tenants to interact with msg they are associated with*@
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.messageId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.messageId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.messageId })
+                </td>
+            </tr>
+        }
+    }
+    @*2.For Managers -> Only messages for logged-in manager are displayed *@
+    else
+    {
+        foreach (var item in Model.Where(i => i.managerId == Convert.ToInt32(Session["manager"])))
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.message)
+                </td>
+                @if (Session["manager"] == null)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.manager.name)
+                    </td>
+                }
+                @if (Session["tenant"] == null)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.tenant.name)
+                    </td>
+                }
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.messageId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.messageId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.messageId })
+                </td>
+            </tr>
+        }
+    }
+</table>
+

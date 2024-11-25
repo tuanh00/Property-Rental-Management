@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="b596029359014f51bfbc159e98b61ff4" Name="Diagram1">
+        <EntityTypeShape EntityType="DbPropertyRentalModel.apartment" Width="1.5" PointX="8.25" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbPropertyRentalModel.appointment" Width="1.5" PointX="3" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbPropertyRentalModel.building" Width="1.5" PointX="6" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbPropertyRentalModel.manager" Width="1.5" PointX="0.75" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbPropertyRentalModel.messageManager" Width="1.5" PointX="3" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbPropertyRentalModel.messageOwner" Width="1.5" PointX="3" PointY="10.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbPropertyRentalModel.owner" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbPropertyRentalModel.tenant" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_apartment_building" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_apartment_tenant" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_appointment_manager" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_appointment_tenant" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_building_manager" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_building_owner" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_messageManager_manager" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_messageOwner_manager" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_messageManager_tenant" ManuallyRouted="false" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_messageOwner_owner" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

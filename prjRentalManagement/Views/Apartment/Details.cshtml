@@ -1,0 +1,64 @@
+﻿@model prjRentalManagement.Models.apartment
+@{
+    ViewBag.Title = "Apartment Details";
+}
+
+<h2>Details</h2>
+<div>
+    <h4>Apartment Details</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.apartmentNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.apartmentNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.nbRooms)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.nbRooms)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.building.address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.building.address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.tenant.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.tenant.name)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.apartmentId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

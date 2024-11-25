@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="DbPropertyRentalModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="apartment">
+    <Key>
+      <PropertyRef Name="apartmentId" />
+    </Key>
+    <Property Name="apartmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="apartmentNo" Type="int" Nullable="false" />
+    <Property Name="nbRooms" Type="int" Nullable="false" />
+    <Property Name="price" Type="money" Nullable="false" />
+    <Property Name="status" Type="nvarchar" MaxLength="10" Nullable="false" />
+    <Property Name="buildingId" Type="int" Nullable="false" />
+    <Property Name="tenantId" Type="int" />
+  </EntityType>
+  <EntityType Name="appointment">
+    <Key>
+      <PropertyRef Name="appointmentId" />
+    </Key>
+    <Property Name="appointmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="managerId" Type="int" Nullable="false" />
+    <Property Name="tenantId" Type="int" Nullable="false" />
+    <Property Name="appointmentDate" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="building">
+    <Key>
+      <PropertyRef Name="buildingId" />
+    </Key>
+    <Property Name="buildingId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="address" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="city" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="province" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="postalCode" Type="nvarchar" MaxLength="10" Nullable="false" />
+    <Property Name="ownerId" Type="int" Nullable="false" />
+    <Property Name="managerId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="manager">
+    <Key>
+      <PropertyRef Name="managerId" />
+    </Key>
+    <Property Name="managerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="email" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="password" Type="nvarchar" MaxLength="64" Nullable="false" />
+    <Property Name="phoneNumber" Type="nvarchar" MaxLength="10" Nullable="false" />
+  </EntityType>
+  <EntityType Name="messageManager">
+    <Key>
+      <PropertyRef Name="messageId" />
+    </Key>
+    <Property Name="messageId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="managerId" Type="int" Nullable="false" />
+    <Property Name="tenantId" Type="int" Nullable="false" />
+    <Property Name="message" Type="nvarchar" MaxLength="100" Nullable="false" />
+  </EntityType>
+  <EntityType Name="messageOwner">
+    <Key>
+      <PropertyRef Name="messageId" />
+    </Key>
+    <Property Name="messageId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ownerId" Type="int" Nullable="false" />
+    <Property Name="managerId" Type="int" Nullable="false" />
+    <Property Name="message" Type="nvarchar" MaxLength="100" Nullable="false" />
+  </EntityType>
+  <EntityType Name="owner">
+    <Key>
+      <PropertyRef Name="ownerId" />
+    </Key>
+    <Property Name="ownerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="email" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="password" Type="nvarchar" MaxLength="64" Nullable="false" />
+    <Property Name="phoneNumber" Type="nvarchar" MaxLength="15" Nullable="false" />
+  </EntityType>
+  <EntityType Name="tenant">
+    <Key>
+      <PropertyRef Name="tenantId" />
+    </Key>
+    <Property Name="tenantId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="email" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="password" Type="nvarchar" MaxLength="64" Nullable="false" />
+    <Property Name="phoneNumber" Type="nvarchar" MaxLength="15" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_apartment_building">
+    <End Role="building" Type="Self.building" Multiplicity="1" />
+    <End Role="apartment" Type="Self.apartment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="building">
+        <PropertyRef Name="buildingId" />
+      </Principal>
+      <Dependent Role="apartment">
+        <PropertyRef Name="buildingId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_apartment_tenant">
+    <End Role="tenant" Type="Self.tenant" Multiplicity="0..1" />
+    <End Role="apartment" Type="Self.apartment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tenant">
+        <PropertyRef Name="tenantId" />
+      </Principal>
+      <Dependent Role="apartment">
+        <PropertyRef Name="tenantId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_appointment_manager">
+    <End Role="manager" Type="Self.manager" Multiplicity="1" />
+    <End Role="appointment" Type="Self.appointment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="manager">
+        <PropertyRef Name="managerId" />
+      </Principal>
+      <Dependent Role="appointment">
+        <PropertyRef Name="managerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_appointment_tenant">
+    <End Role="tenant" Type="Self.tenant" Multiplicity="1" />
+    <End Role="appointment" Type="Self.appointment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tenant">
+        <PropertyRef Name="tenantId" />
+      </Principal>
+      <Dependent Role="appointment">
+        <PropertyRef Name="tenantId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_building_manager">
+    <End Role="manager" Type="Self.manager" Multiplicity="1" />
+    <End Role="building" Type="Self.building" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="manager">
+        <PropertyRef Name="managerId" />
+      </Principal>
+      <Dependent Role="building">
+        <PropertyRef Name="managerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_building_owner">
+    <End Role="owner" Type="Self.owner" Multiplicity="1" />
+    <End Role="building" Type="Self.building" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="owner">
+        <PropertyRef Name="ownerId" />
+      </Principal>
+      <Dependent Role="building">
+        <PropertyRef Name="ownerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_messageManager_manager">
+    <End Role="manager" Type="Self.manager" Multiplicity="1" />
+    <End Role="messageManager" Type="Self.messageManager" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="manager">
+        <PropertyRef Name="managerId" />
+      </Principal>
+      <Dependent Role="messageManager">
+        <PropertyRef Name="managerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_messageManager_tenant">
+    <End Role="tenant" Type="Self.tenant" Multiplicity="1" />
+    <End Role="messageManager" Type="Self.messageManager" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tenant">
+        <PropertyRef Name="tenantId" />
+      </Principal>
+      <Dependent Role="messageManager">
+        <PropertyRef Name="tenantId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_messageOwner_manager">
+    <End Role="manager" Type="Self.manager" Multiplicity="1" />
+    <End Role="messageOwner" Type="Self.messageOwner" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="manager">
+        <PropertyRef Name="managerId" />
+      </Principal>
+      <Dependent Role="messageOwner">
+        <PropertyRef Name="managerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_messageOwner_owner">
+    <End Role="owner" Type="Self.owner" Multiplicity="1" />
+    <End Role="messageOwner" Type="Self.messageOwner" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="owner">
+        <PropertyRef Name="ownerId" />
+      </Principal>
+      <Dependent Role="messageOwner">
+        <PropertyRef Name="ownerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="DbPropertyRentalModelStoreContainer">
+    <EntitySet Name="apartment" EntityType="Self.apartment" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="appointment" EntityType="Self.appointment" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="building" EntityType="Self.building" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="manager" EntityType="Self.manager" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="messageManager" EntityType="Self.messageManager" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="messageOwner" EntityType="Self.messageOwner" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="owner" EntityType="Self.owner" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tenant" EntityType="Self.tenant" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_apartment_building" Association="Self.FK_apartment_building">
+      <End Role="building" EntitySet="building" />
+      <End Role="apartment" EntitySet="apartment" />
+    </AssociationSet>
+    <AssociationSet Name="FK_apartment_tenant" Association="Self.FK_apartment_tenant">
+      <End Role="tenant" EntitySet="tenant" />
+      <End Role="apartment" EntitySet="apartment" />
+    </AssociationSet>
+    <AssociationSet Name="FK_appointment_manager" Association="Self.FK_appointment_manager">
+      <End Role="manager" EntitySet="manager" />
+      <End Role="appointment" EntitySet="appointment" />
+    </AssociationSet>
+    <AssociationSet Name="FK_appointment_tenant" Association="Self.FK_appointment_tenant">
+      <End Role="tenant" EntitySet="tenant" />
+      <End Role="appointment" EntitySet="appointment" />
+    </AssociationSet>
+    <AssociationSet Name="FK_building_manager" Association="Self.FK_building_manager">
+      <End Role="manager" EntitySet="manager" />
+      <End Role="building" EntitySet="building" />
+    </AssociationSet>
+    <AssociationSet Name="FK_building_owner" Association="Self.FK_building_owner">
+      <End Role="owner" EntitySet="owner" />
+      <End Role="building" EntitySet="building" />
+    </AssociationSet>
+    <AssociationSet Name="FK_messageManager_manager" Association="Self.FK_messageManager_manager">
+      <End Role="manager" EntitySet="manager" />
+      <End Role="messageManager" EntitySet="messageManager" />
+    </AssociationSet>
+    <AssociationSet Name="FK_messageManager_tenant" Association="Self.FK_messageManager_tenant">
+      <End Role="tenant" EntitySet="tenant" />
+      <End Role="messageManager" EntitySet="messageManager" />
+    </AssociationSet>
+    <AssociationSet Name="FK_messageOwner_manager" Association="Self.FK_messageOwner_manager">
+      <End Role="manager" EntitySet="manager" />
+      <End Role="messageOwner" EntitySet="messageOwner" />
+    </AssociationSet>
+    <AssociationSet Name="FK_messageOwner_owner" Association="Self.FK_messageOwner_owner">
+      <End Role="owner" EntitySet="owner" />
+      <End Role="messageOwner" EntitySet="messageOwner" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

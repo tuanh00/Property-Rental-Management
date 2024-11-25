@@ -1,0 +1,59 @@
+﻿@model IEnumerable<prjRentalManagement.Models.apartment>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <div class="opacityController">
+        <h1>Property Rental Management</h1>
+        <p class="lead">Leader in rental property management for 20 years | Prices to Suit All Budgets</p>
+    </div>
+</div>
+
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Get))
+{
+    <div style="text-align:center;margin-bottom:10px">
+        @Html.TextBox("search", null, new { @style = "padding:3px;" })<input type="submit" value="Search Apartment" class="btn btn-primary" />
+    </div>
+}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Apartment Id</th>
+            <th>Address</th>
+            <th>Apartment No.</th>
+            <th>City</th>
+            <th>Province</th>
+            <th>Postal Code</th>
+            <th>Rooms</th>
+            <th>Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="5" style="color:red">Apartment not found</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.apartmentId)</td>
+                    <td>@Html.DisplayFor(modelItem => item.building.address)</td>
+                    <td>@Html.DisplayFor(modelItem => item.apartmentNo)</td>
+                    <td>@Html.DisplayFor(modelItem => item.building.city)</td>
+                    <td>@Html.DisplayFor(modelItem => item.building.province)</td>
+                    <td>@Html.DisplayFor(modelItem => item.building.postalCode)</td>
+                    <td>@Html.DisplayFor(modelItem => item.nbRooms)</td>
+                    <td>@Html.DisplayFor(modelItem => item.price)</td>
+                    <td>@Html.DisplayFor(modelItem => item.status)</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

@@ -1,0 +1,40 @@
+﻿@model prjRentalManagement.Models.appointment
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+<div>
+    <h4>appointment</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.appointmentDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.appointmentDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.manager.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.manager.name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.tenant.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.tenant.name)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.appointmentId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

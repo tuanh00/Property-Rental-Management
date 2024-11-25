@@ -1,0 +1,88 @@
+﻿@model IEnumerable<prjRentalManagement.Models.apartment>
+@{
+    ViewBag.Title = "Apartment";
+}
+<h2>Apartments</h2>
+@*The "Create New Apartment" link is displayed only if a property manager is logged in.*@
+@if (Session["manager"] != null)
+{
+    <p>
+        @Html.ActionLink("Create New Apartment", "Create")
+    </p>
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.apartmentNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.nbRooms)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.building.address)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.building.city)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.building.province)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.building.postalCode)
+        </th>
+        @if (Session["manager"] != null)
+        {
+            <th>Actions</th>
+        }
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.apartmentNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.nbRooms)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.building.address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.building.city)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.building.province)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.building.postalCode)
+            </td>
+            @if (Session["manager"] != null)
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.apartmentId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.apartmentId })
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId })
+                </td>
+            }
+        </tr>
+    }
+</table>

@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="DbPropertyRentalModelStoreContainer" CdmEntityContainer="DbPropertyRentalEntities">
+    <EntitySetMapping Name="apartments">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.apartment">
+        <MappingFragment StoreEntitySet="apartment">
+          <ScalarProperty Name="apartmentId" ColumnName="apartmentId" />
+          <ScalarProperty Name="apartmentNo" ColumnName="apartmentNo" />
+          <ScalarProperty Name="nbRooms" ColumnName="nbRooms" />
+          <ScalarProperty Name="price" ColumnName="price" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="buildingId" ColumnName="buildingId" />
+          <ScalarProperty Name="tenantId" ColumnName="tenantId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="appointments">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.appointment">
+        <MappingFragment StoreEntitySet="appointment">
+          <ScalarProperty Name="appointmentId" ColumnName="appointmentId" />
+          <ScalarProperty Name="managerId" ColumnName="managerId" />
+          <ScalarProperty Name="tenantId" ColumnName="tenantId" />
+          <ScalarProperty Name="appointmentDate" ColumnName="appointmentDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="buildings">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.building">
+        <MappingFragment StoreEntitySet="building">
+          <ScalarProperty Name="buildingId" ColumnName="buildingId" />
+          <ScalarProperty Name="address" ColumnName="address" />
+          <ScalarProperty Name="city" ColumnName="city" />
+          <ScalarProperty Name="province" ColumnName="province" />
+          <ScalarProperty Name="postalCode" ColumnName="postalCode" />
+          <ScalarProperty Name="ownerId" ColumnName="ownerId" />
+          <ScalarProperty Name="managerId" ColumnName="managerId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="managers">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.manager">
+        <MappingFragment StoreEntitySet="manager">
+          <ScalarProperty Name="managerId" ColumnName="managerId" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="phoneNumber" ColumnName="phoneNumber" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="messageManagers">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.messageManager">
+        <MappingFragment StoreEntitySet="messageManager">
+          <ScalarProperty Name="messageId" ColumnName="messageId" />
+          <ScalarProperty Name="managerId" ColumnName="managerId" />
+          <ScalarProperty Name="tenantId" ColumnName="tenantId" />
+          <ScalarProperty Name="message" ColumnName="message" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="messageOwners">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.messageOwner">
+        <MappingFragment StoreEntitySet="messageOwner">
+          <ScalarProperty Name="messageId" ColumnName="messageId" />
+          <ScalarProperty Name="ownerId" ColumnName="ownerId" />
+          <ScalarProperty Name="managerId" ColumnName="managerId" />
+          <ScalarProperty Name="message" ColumnName="message" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="owners">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.owner">
+        <MappingFragment StoreEntitySet="owner">
+          <ScalarProperty Name="ownerId" ColumnName="ownerId" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="phoneNumber" ColumnName="phoneNumber" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tenants">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.tenant">
+        <MappingFragment StoreEntitySet="tenant">
+          <ScalarProperty Name="tenantId" ColumnName="tenantId" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="phoneNumber" ColumnName="phoneNumber" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

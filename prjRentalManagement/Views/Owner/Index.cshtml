@@ -1,0 +1,43 @@
+﻿@model IEnumerable<prjRentalManagement.Models.owner>
+
+@{
+    ViewBag.Title = "Your Information";
+}
+
+@if (Session["owner"] == null)
+{
+    Response.Redirect("~/OwnerAccess");
+}
+else
+{
+    <h2>Your Information</h2>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(m => m.First().name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.First().email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.First().phoneNumber)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Where(i => i.ownerId == Convert.ToInt32(Session["owner"])))
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.name)</td>
+            <td>@Html.DisplayFor(modelItem => item.email)</td>
+            <td>@Html.DisplayFor(modelItem => item.phoneNumber)</td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ownerId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ownerId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ownerId })
+            </td>
+        </tr>
+    }
+</table>

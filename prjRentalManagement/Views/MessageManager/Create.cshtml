@@ -1,0 +1,80 @@
+﻿@model prjRentalManagement.Models.messageManager
+@{
+    ViewBag.Title = "Create";
+}
+<h2>Create</h2>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>messageManager</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @*If no logged-in Manager -> display a dropdownlist pulls available managers for selection*@
+        @if (Session["manager"] == null)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.managerId, "managerId", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownList("managerId", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.managerId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        @*If user is manager -> set managerId by the session's managerId'*@
+        @if (Session["manager"] != null)
+        {
+            <div class="form-group">
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.managerId, new { htmlAttributes = new { @class = "form-control", @Value = Session["manager"].ToString(), @style = "display: none" } })
+                    @Html.ValidationMessageFor(model => model.managerId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        @*If user is a tenant -> set tenantId by their session's tenantId'*@
+        @if (Session["tenant"] != null)
+        {
+            <div class="form-group">
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.tenantId, new { htmlAttributes = new { @class = "form-control", @Value = Session["tenant"].ToString(), @style = "display: none" } })
+                    @Html.ValidationMessageFor(model => model.tenantId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        @*If user is not a tenant -> display a dropdownlist to select a tenant*@
+        @if (Session["tenant"] == null)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.tenantId, "tenantId", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownList("tenantId", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.tenantId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        @*Includes a validation msg for errors such as missing/invalid inputs*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.message, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.message, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.message, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+}
