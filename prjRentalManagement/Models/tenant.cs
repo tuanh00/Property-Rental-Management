@@ -22,10 +22,11 @@ namespace prjRentalManagement.Models
             this.appointments = new HashSet<appointment>();
             this.messageManagers = new HashSet<messageManager>();
         }
-    
+
+        [Display(Name = "Tenant ID")]
         public int tenantId { get; set; }
 
-        [Display(Name = "Name")]
+        [Display(Name = "Tenant Name")]
         public string name { get; set; }
 
         [Display(Name = "Email")]

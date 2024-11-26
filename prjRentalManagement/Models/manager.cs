@@ -23,7 +23,8 @@ namespace prjRentalManagement.Models
             this.messageManagers = new HashSet<messageManager>();
             this.messageOwners = new HashSet<messageOwner>();
         }
-    
+
+        [Display(Name = "Manager ID")]
         public int managerId { get; set; }
 
         [Required(ErrorMessage = "Name is required.")]
@@ -32,7 +33,7 @@ namespace prjRentalManagement.Models
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid Email Address.")]
-        [Display(Name = "Email Address")]
+        [Display(Name = "Email")]
         public string email { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]

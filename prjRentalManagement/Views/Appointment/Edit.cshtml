@@ -1,45 +1,63 @@
 ﻿@model prjRentalManagement.Models.appointment
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Edit Appointment";
 }
-<h2>Edit</h2>
+
+<h2>Edit Appointment</h2>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>appointment</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
         @Html.HiddenFor(model => model.appointmentId)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.managerId, "managerId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("managerId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.managerId, "", new { @class = "text-danger" })
+        <!-- Tenant Dropdown for Managers -->
+        @if (Session["manager"] != null)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.tenantId, "Tenant Name", htmlAttributes: new { @class = "control-label col-md-2 fw-bold" })
+                <div class="col-md-10 mt-2">
+                    @Html.DropDownListFor(
+                        model => model.tenantId,
+                        ViewBag.tenantId as SelectList,
+                        htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.tenantId, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
+        }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.tenantId, "tenantId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("tenantId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.tenantId, "", new { @class = "text-danger" })
+        <!-- Manager Dropdown for Tenants -->
+        @if (Session["tenant"] != null)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.managerId, "Manager", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10 mt-2">
+                    @Html.DropDownListFor(
+                        model => model.managerId,
+                        ViewBag.managerId as SelectList,
+                        htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.managerId, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
+        }
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.appointmentDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.appointmentDate, new { htmlAttributes = new { @class = "form-control" } })
+        <!-- Appointment Date -->
+        <div class="form-group mt-2">
+            @Html.LabelFor(model => model.appointmentDate, "Appointment Date", htmlAttributes: new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10 mt-2">
+                @Html.TextBoxFor(
+                    model => model.appointmentDate,
+                    new { @class = "form-control", @type = "date", @Value = Model.appointmentDate.ToString("yyyy-MM-dd") })
                 @Html.ValidationMessageFor(model => model.appointmentDate, "", new { @class = "text-danger" })
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-3 mb-3">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-success" />
             </div>
         </div>
     </div>
@@ -53,3 +71,5 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+

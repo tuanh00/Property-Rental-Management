@@ -2,91 +2,69 @@
 @{
     ViewBag.Title = "Appointments";
 }
+
 <h2>Appointments</h2>
-@if (Session["tenant"] != null || Session["manager"] != null)
+
+@if (Session["manager"] != null || Session["tenant"] != null)
 {
     <p>
-        @Html.ActionLink("Create New", "Create")
+        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary" })
     </p>
 }
-@* The view ensures tenants only see their appointments, and managers only see the appointments assigned to them. *@
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.appointmentDate)
-        </th>
-        @if (Session["manager"] == null)
-        {
-            <th>
-                @Html.DisplayNameFor(model => model.manager.name)
-            </th>
-        }
-        @if (Session["tenant"] == null)
-        {
-            <th>
-                @Html.DisplayNameFor(model => model.tenant.name)
-            </th>
-        }
-    </tr>
-    @if (Session["manager"] == null)
-    {
-        foreach (var item in Model.Where(i => i.tenantId == Convert.ToInt32(Session["tenant"])))
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.appointmentDate)
-                </td>
-                <!-- Display manager name if session is not manager -->
-                @if (Session["manager"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.manager.name)
-                    </td>
-                }
-                <!-- Display tenant name if session is not tenant -->
-                @if (Session["tenant"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.tenant.name)
-                    </td>
-                }
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.appointmentId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.appointmentId }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.appointmentId })
-                </td>
-            </tr>
-        }
-    }
-    else
-    {
-        foreach (var item in Model.Where(i => i.managerId == Convert.ToInt32(Session["manager"])))
-        {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.appointmentDate)
-    </td>
-    <!-- Display manager name if session is not manager -->
-    @if (Session["manager"] == null)
-    {
-        <td>
-            @Html.DisplayFor(modelItem => item.manager.name)
-        </td>
-    }
-    <!-- Display tenant name if session is not tenant -->
-    @if (Session["tenant"] == null)
-    {
-        <td>
-            @Html.DisplayFor(modelItem => item.tenant.name)
-        </td>
-    }
-    <td>
-        @Html.ActionLink("Edit", "Edit", new { id = item.appointmentId }) |
-        @Html.ActionLink("Details", "Details", new { id = item.appointmentId }) |
-        @Html.ActionLink("Delete", "Delete", new { id = item.appointmentId })
-    </td>
-</tr>
-        }
-    }
 
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.appointmentDate)</th>
+            @if (Session["manager"] == null)
+            {
+                <th>@Html.DisplayNameFor(model => model.manager.name)</th>
+            }
+            @if (Session["tenant"] == null)
+            {
+                <th>@Html.DisplayNameFor(model => model.tenant.name)</th>
+            }
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Session["tenant"] != null)
+        {
+            // Show appointments for logged-in tenant
+            foreach (var item in Model.Where(i => i.tenantId == Convert.ToInt32(Session["tenant"])))
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.appointmentDate)</td>
+                    @if (Session["manager"] == null)
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.manager.name)</td>
+                    }
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.appointmentId }, new { @class = "btn btn-warning btn-sm" }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.appointmentId }, new { @class = "btn btn-info btn-sm" }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.appointmentId }, new { @class = "btn btn-danger btn-sm" })
+                    </td>
+                </tr>
+            }
+        }
+        else if (Session["manager"] != null)
+        {
+            // Show appointments for logged-in manager
+            foreach (var item in Model.Where(i => i.managerId == Convert.ToInt32(Session["manager"])))
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.appointmentDate)</td>
+                    @if (Session["tenant"] == null)
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.tenant.name)</td>
+                    }
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.appointmentId }, new { @class = "btn btn-warning btn-sm" }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.appointmentId }, new { @class = "btn btn-info btn-sm" }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.appointmentId }, new { @class = "btn btn-danger btn-sm" })
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
 </table>

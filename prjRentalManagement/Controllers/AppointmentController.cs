@@ -14,11 +14,30 @@ namespace prjRentalManagement.Controllers
     {
         private DbPropertyRentalEntities db = new DbPropertyRentalEntities();
 
-        // GET: Appointment
+        // GET: Appointment -> both Managers and Tenants should only see their assigned appointments.
         public ActionResult Index()
         {
-            var appointments = db.appointments.Include(a => a.manager).Include(a => a.tenant);
-            return View(appointments.ToList());
+            if (Session["manager"] != null)
+            {
+                int managerId = int.Parse(Session["manager"].ToString());
+                var appointments = db.appointments
+                    .Include(a => a.manager)
+                    .Include(a => a.tenant)
+                    .Where(a => a.managerId == managerId);
+                return View(appointments.ToList());
+            }
+
+            if (Session["tenant"] != null)
+            {
+                int tenantId = int.Parse(Session["tenant"].ToString());
+                var appointments = db.appointments
+                    .Include(a => a.manager)
+                    .Include(a => a.tenant)
+                    .Where(a => a.tenantId == tenantId);
+                return View(appointments.ToList());
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Appointment/Details/5
@@ -36,16 +55,22 @@ namespace prjRentalManagement.Controllers
             return View(appointment);
         }
 
-        // GET: Appointment/Create -> for Tenants and Managers(optional)
+        // GET: Appointment/Create -> for Managers, display a ddl for tenants. for tenants, display a ddl for managers
         public ActionResult Create() 
         {
-            if (Session["tenant"] == null && Session["manager"] == null)
+            if (Session["manager"] != null)
             {
-                return RedirectToAction("Index");
+                ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name");
+                return View();
             }
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name");
-            ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name");
-            return View();
+
+            if (Session["tenant"] != null)
+            {
+                ViewBag.managerId = new SelectList(db.managers, "managerId", "name");
+                return View();
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: Appointment/Create -> for Tenants and Managers(optional)
@@ -55,10 +80,16 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "appointmentId,managerId,tenantId,appointmentDate")] appointment appointment)
         {
-            if (Session["tenant"] == null && Session["manager"] == null)
+            if (Session["manager"] != null)
             {
-                return RedirectToAction("Index");
+                appointment.managerId = int.Parse(Session["manager"].ToString());
             }
+
+            if (Session["tenant"] != null)
+            {
+                appointment.tenantId = int.Parse(Session["tenant"].ToString());
+            }
+
             if (ModelState.IsValid)
             {
                 db.appointments.Add(appointment);
@@ -66,29 +97,64 @@ namespace prjRentalManagement.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", appointment.managerId);
-            ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", appointment.tenantId);
+            if (Session["manager"] != null)
+            {
+                ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", appointment.tenantId);
+            }
+
+            if (Session["tenant"] != null)
+            {
+                ViewBag.managerId = new SelectList(db.managers, "managerId", "name", appointment.managerId);
+            }
+
             return View(appointment);
         }
 
-        // GET: Appointment/Edit/5 -> only for Manager
+        // GET: Appointment/Edit/5 -> only allow managers to edit their appointments and tenants to edit theirs.
         public ActionResult Edit(int? id)
         {
-            if (Session["manager"] == null)
-            {
-                return RedirectToAction("Index");
-            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            appointment appointment = db.appointments.Find(id);
-            if (appointment == null)
+
+            appointment appointment = null;
+
+            if (Session["manager"] != null)
             {
-                return HttpNotFound();
+                int managerId = int.Parse(Session["manager"].ToString());
+                appointment = db.appointments
+                    .Where(a => a.managerId == managerId && a.appointmentId == id)
+                    .FirstOrDefault();
+
+                if (appointment == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // Populate tenants for the dropdown
+                ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", appointment.tenantId);
             }
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", appointment.managerId);
-            ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", appointment.tenantId);
+            else if (Session["tenant"] != null)
+            {
+                int tenantId = int.Parse(Session["tenant"].ToString());
+                appointment = db.appointments
+                    .Where(a => a.tenantId == tenantId && a.appointmentId == id)
+                    .FirstOrDefault();
+
+                if (appointment == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // Populate managers for the dropdown (if needed)
+                ViewBag.managerId = new SelectList(db.managers, "managerId", "name", appointment.managerId);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(appointment);
         }
 
@@ -99,30 +165,75 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "appointmentId,managerId,tenantId,appointmentDate")] appointment appointment)
         {
+            if (Session["manager"] != null)
+            {
+                appointment.managerId = int.Parse(Session["manager"].ToString());
+            }
+
+            if (Session["tenant"] != null)
+            {
+                appointment.tenantId = int.Parse(Session["tenant"].ToString());
+            }
+
             if (ModelState.IsValid)
             {
                 db.Entry(appointment).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", appointment.managerId);
-            ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", appointment.tenantId);
+
+            // Repopulate ViewBag for invalid ModelState
+            if (Session["manager"] != null)
+            {
+                ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", appointment.tenantId);
+            }
+            else if (Session["tenant"] != null)
+            {
+                ViewBag.managerId = new SelectList(db.managers, "managerId", "name", appointment.managerId);
+            }
+
             return View(appointment);
         }
 
-        // GET: Appointment/Delete/5
+        // GET: Appointment/Delete/5 -> Only for Manager can delete appointments assigned to them
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            appointment appointment = db.appointments.Find(id);
-            if (appointment == null)
+
+            if (Session["manager"] != null)
             {
-                return HttpNotFound();
+                int managerId = int.Parse(Session["manager"].ToString());
+                appointment appointment = db.appointments
+                    .Where(a => a.managerId == managerId && a.appointmentId == id)
+                    .FirstOrDefault();
+
+                if (appointment == null)
+                {
+                    return HttpNotFound();
+                }
+
+                return View(appointment);
             }
-            return View(appointment);
+
+            if (Session["tenant"] != null)
+            {
+                int tenantId = int.Parse(Session["tenant"].ToString());
+                appointment appointment = db.appointments
+                    .Where(a => a.tenantId == tenantId && a.appointmentId == id)
+                    .FirstOrDefault();
+
+                if (appointment == null)
+                {
+                    return HttpNotFound();
+                }
+
+                return View(appointment);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: Appointment/Delete/5
@@ -131,6 +242,17 @@ namespace prjRentalManagement.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             appointment appointment = db.appointments.Find(id);
+
+            if (Session["manager"] != null && appointment.managerId != int.Parse(Session["manager"].ToString()))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
+            if (Session["tenant"] != null && appointment.tenantId != int.Parse(Session["tenant"].ToString()))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
             db.appointments.Remove(appointment);
             db.SaveChanges();
             return RedirectToAction("Index");
