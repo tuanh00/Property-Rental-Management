@@ -20,6 +20,7 @@ namespace prjRentalManagement.Models
         public int managerId { get; set; }
         public int tenantId { get; set; }
 
+        [Required(ErrorMessage = "Message is required.")]
         [Display(Name = "Message")]
 
         public string message { get; set; }

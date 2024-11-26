@@ -18,8 +18,27 @@ namespace prjRentalManagement.Controllers
         // GET: MessageManager
         public ActionResult Index()
         {
-            var messageManagers = db.messageManagers.Include(m => m.manager).Include(m => m.tenant);
-            return View(messageManagers.ToList());
+            if (Session["manager"] != null)
+            {
+                int managerId = Convert.ToInt32(Session["manager"]);
+                var messageManagers = db.messageManagers
+                    .Include(m => m.manager)
+                    .Include(m => m.tenant)
+                    .Where(m => m.managerId == managerId);
+                return View(messageManagers.ToList());
+            }
+
+            if (Session["tenant"] != null)
+            {
+                int tenantId = Convert.ToInt32(Session["tenant"]);
+                var messageManagers = db.messageManagers
+                    .Include(m => m.manager)
+                    .Include(m => m.tenant)
+                    .Where(m => m.tenantId == tenantId);
+                return View(messageManagers.ToList());
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: MessageManager/Details/5
@@ -37,12 +56,17 @@ namespace prjRentalManagement.Controllers
             return View(messageManager);
         }
 
-        // GET: MessageManager/Create
+        // GET: MessageManager/Create -> Only tenants can create messages
+
         public ActionResult Create()
         {
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name");
-            ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name");
-            return View();
+            if (Session["tenant"] != null)
+            {
+                ViewBag.managerId = new SelectList(db.managers, "managerId", "name");
+                return View();
+            }
+
+            return RedirectToAction("Index", "Home"); // Redirect if not a tenant
         }
 
         // POST: MessageManager/Create
@@ -52,19 +76,24 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "messageId,managerId,tenantId,message")] messageManager messageManager)
         {
-            if (ModelState.IsValid)
+            if (Session["tenant"] != null)
             {
-                // Initialize responseMessage to null when a new msg is created
-                messageManager.responseMessage = null;
+                // Automatically assign the tenantId from the session
+                messageManager.tenantId = Convert.ToInt32(Session["tenant"]);
 
-                db.messageManagers.Add(messageManager);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    messageManager.responseMessage = null; // Manager hasn't responded yet
+                    db.messageManagers.Add(messageManager);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+
+                ViewBag.managerId = new SelectList(db.managers, "managerId", "name", messageManager.managerId);
+                return View(messageManager);
             }
 
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", messageManager.managerId);
-            ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", messageManager.tenantId);
-            return View(messageManager);
+            return RedirectToAction("Index", "Home"); // Redirect if not a tenant
         }
 
         // GET: MessageManager/Edit/5
@@ -93,92 +122,49 @@ namespace prjRentalManagement.Controllers
         {
             try
             {
-                // Debug: Log incoming data
-                System.Diagnostics.Debug.WriteLine($"Incoming MessageManager: messageId={messageManager.messageId}, tenantId={messageManager.tenantId}, managerId={messageManager.managerId}");
-                System.Diagnostics.Debug.WriteLine($"Incoming ResponseMessage: {messageManager.responseMessage}");
-
-                // 1. Validate `messageManager` is not null
                 if (messageManager == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error: messageManager object is null.");
                     throw new ArgumentNullException(nameof(messageManager), "messageManager object is null.");
                 }
 
-                // Retrieve the original entity from the database
-                var existingMessage = db.messageManagers
-                    .Include(m => m.tenant)
-                    .Include(m => m.manager)
-                    .FirstOrDefault(m => m.messageId == messageManager.messageId);
-
-                // Debug: Check if the entity exists in the database
+                // Retrieve the existing message from the database
+                var existingMessage = db.messageManagers.Find(messageManager.messageId);
                 if (existingMessage == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error: messageManager entity not found in database.");
                     ModelState.AddModelError("", "The messageManager record was not found.");
                     return View(messageManager);
                 }
 
-                // Debug: Log database data
-                System.Diagnostics.Debug.WriteLine($"Database MessageManager: messageId={existingMessage.messageId}, tenantId={existingMessage.tenantId}, managerId={existingMessage.managerId}");
-                System.Diagnostics.Debug.WriteLine($"Database Message: {existingMessage.message}, ResponseMessage: {existingMessage.responseMessage}");
-
-                // 2. Check foreign key relationships
-                var tenantExists = db.tenants.Any(t => t.tenantId == existingMessage.tenantId);
-                var managerExists = db.managers.Any(m => m.managerId == existingMessage.managerId);
-
-                // Debug: Log foreign key checks
-                System.Diagnostics.Debug.WriteLine($"Tenant Exists: {tenantExists}");
-                System.Diagnostics.Debug.WriteLine($"Manager Exists: {managerExists}");
-
-                if (!tenantExists)
+                // Check the session to determine the role
+                if (Session["tenant"] != null)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error: Tenant does not exist.");
-                    ModelState.AddModelError("", "The associated tenant does not exist.");
-                    return View(messageManager);
+                    // Tenant updating their message
+                    existingMessage.message = messageManager.message; // Update the message
+                    existingMessage.responseMessage = null; // Reset responseMessage
+                }
+                else if (Session["manager"] != null)
+                {
+                    // Manager updating their response
+                    existingMessage.responseMessage = messageManager.responseMessage; // Update responseMessage
+                }
+                else
+                {
+                    // Invalid session
+                    return RedirectToAction("Index", "Home");
                 }
 
-                if (!managerExists)
-                {
-                    System.Diagnostics.Debug.WriteLine("Error: Manager does not exist.");
-                    ModelState.AddModelError("", "The associated manager does not exist.");
-                    return View(messageManager);
-                }
-
-                // 3. Ensure only the `responseMessage` field is updated
-                existingMessage.responseMessage = messageManager.responseMessage;
-
-                // Update the entity in the database
                 db.Entry(existingMessage).State = EntityState.Modified;
                 db.SaveChanges();
 
-                // Debug: Log success
-                System.Diagnostics.Debug.WriteLine("MessageManager updated successfully.");
                 return RedirectToAction("Index");
-            }
-            catch (DbUpdateException ex)
-            {
-                // Debug: Log detailed exception information
-                System.Diagnostics.Debug.WriteLine($"DbUpdateException: {ex.Message}");
-                var inner = ex.InnerException;
-                while (inner != null)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Inner Exception: {inner.Message}");
-                    inner = inner.InnerException;
-                }
-                ModelState.AddModelError("", "An error occurred while updating the database. Please try again.");
             }
             catch (Exception ex)
             {
-                // Debug: Log unexpected errors
-                System.Diagnostics.Debug.WriteLine($"Unexpected Exception: {ex.Message}");
-                ModelState.AddModelError("", "An unexpected error occurred. Please try again.");
+                ModelState.AddModelError("", "An error occurred while updating the message. Please try again.");
             }
 
-            // Reload dropdowns if any and return the view for correction
             return View(messageManager);
         }
-
-
 
         // GET: MessageManager/Delete/5
         public ActionResult Delete(int? id)
