@@ -2,94 +2,93 @@
 @{
     ViewBag.Title = "Owner Messages";
 }
-<h2>Messages</h2>
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+
+@* Dynamic Title Based on the Session *@
+@if (Session["manager"] != null)
+{
+    <h2>Owner Messages</h2>
+}
+@if (Session["owner"] != null)
+{
+    <h2>Manager Messages</h2>
+}
+
+@* Provides a link to create a new message (for Owner) *@
+@if (Session["owner"] != null)
+{
+    <p>
+        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary" })
+    </p>
+}
+
 <table class="table">
-    @*Dynamic headers based on the session*@
     <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.message)
-        </th>
-        @*If no Manager is logged in -> displayed Manager Name header*@
+        <th>@Html.DisplayNameFor(model => model.message)</th>
+        <th>@Html.DisplayNameFor(model => model.responseMessage)</th>
+        @* Manager Name: Displayed only if the current user is NOT a manager *@
         @if (Session["manager"] == null)
         {
-            <th>
-                @Html.DisplayNameFor(model => model.manager.name)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.manager.name)</th>
         }
-        @*if no Owner is logged in -> displayed Owner Name header*@
+        @* Owner Name: Displayed only if the current user is NOT an owner *@
         @if (Session["owner"] == null)
         {
-            <th>
-                @Html.DisplayNameFor(model => model.owner.name)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.owner.name)</th>
         }
-        <th></th>
+        <th>Actions</th>
     </tr>
-    @*--Message Row--*@
-    @*1. When a Manager is Not Logged In -> displayed only messages that match the current logged-in owner*@
-    @if (Session["manager"] == null)
+
+    @* Filtering Messages Based on Session *@
+    @if (Session["owner"] != null)
     {
+        @* For Owners: Display messages for the logged-in owner *@
         foreach (var item in Model.Where(i => i.ownerId == Convert.ToInt32(Session["owner"])))
         {
             <tr>
-                @*1.1 show msg content*@
+                <td>@Html.DisplayFor(modelItem => item.message)</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.message)
+                    @if (string.IsNullOrWhiteSpace(item.responseMessage))
+                    {
+                        <span class="text-muted">No response yet</span>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.responseMessage)
+                    }
                 </td>
-                @*1.2 no Manager is logged in -> display Manager Name*@
-                @if (Session["manager"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.manager.name)
-                    </td>
-                }
-                @*1.2 no Owner is logged in -> display Owner Name*@
-                @if (Session["owner"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.owner.name)
-                    </td>
-                }
-                @*1.3 Action section*@
+                <td>@Html.DisplayFor(modelItem => item.manager.name)</td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.messageId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.messageId }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.messageId })
+                    @Html.ActionLink("Edit Message", "Edit", new { id = item.messageId }, new { @class = "btn btn-sm btn-warning" }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.messageId }, new { @class = "btn btn-sm btn-info" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.messageId }, new { @class = "btn btn-sm btn-danger" })
                 </td>
             </tr>
         }
     }
-    @*2. When a Manager is Logged In*@
-    else
+    else if (Session["manager"] != null)
     {
+        @* For Managers: Display messages for the logged-in manager *@
         foreach (var item in Model.Where(i => i.managerId == Convert.ToInt32(Session["manager"])))
         {
             <tr>
+                <td>@Html.DisplayFor(modelItem => item.message)</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.message)
+                    @if (string.IsNullOrWhiteSpace(item.responseMessage))
+                    {
+                        <span class="text-warning">Awaiting your response</span>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.responseMessage)
+                    }
                 </td>
-                @if (Session["manager"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.manager.name)
-                    </td>
-                }
-                @if (Session["owner"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.owner.name)
-                    </td>
-                }
+                <td>@Html.DisplayFor(modelItem => item.owner.name)</td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.messageId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.messageId }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.messageId })
+                    @Html.ActionLink("Edit Response", "Edit", new { id = item.messageId }, new { @class = "btn btn-sm btn-warning" }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.messageId }, new { @class = "btn btn-sm btn-info" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.messageId }, new { @class = "btn btn-sm btn-danger" })
                 </td>
             </tr>
         }
     }
 </table>
-

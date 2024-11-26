@@ -17,8 +17,27 @@ namespace prjRentalManagement.Controllers
         // GET: MessageOwner
         public ActionResult Index()
         {
-            var messageOwners = db.messageOwners.Include(m => m.manager).Include(m => m.owner);
-            return View(messageOwners.ToList());
+            if (Session["manager"] != null)
+            {
+                int managerId = Convert.ToInt32(Session["manager"]);
+                var messageOwners = db.messageOwners
+                    .Include(m => m.manager)
+                    .Include(m => m.owner)
+                    .Where(m => m.managerId == managerId);
+                return View(messageOwners.ToList());
+            }
+
+            if (Session["owner"] != null)
+            {
+                int ownerId = Convert.ToInt32(Session["owner"]);
+                var messageOwners = db.messageOwners
+                    .Include(m => m.manager)
+                    .Include(m => m.owner)
+                    .Where(m => m.ownerId == ownerId);
+                return View(messageOwners.ToList());
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: MessageOwner/Details/5
@@ -39,9 +58,13 @@ namespace prjRentalManagement.Controllers
         // GET: MessageOwner/Create
         public ActionResult Create()
         {
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name");
-            ViewBag.ownerId = new SelectList(db.owners, "ownerId", "name");
-            return View();
+            if (Session["owner"] != null)
+            {
+                ViewBag.managerId = new SelectList(db.managers, "managerId", "name");
+                return View();
+            }
+
+            return RedirectToAction("Index", "Home"); // Redirect if not an owner
         }
 
         // POST: MessageOwner/Create
@@ -51,16 +74,23 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "messageId,ownerId,managerId,message")] messageOwner messageOwner)
         {
-            if (ModelState.IsValid)
+            if (Session["owner"] != null)
             {
-                db.messageOwners.Add(messageOwner);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                // Automatically assign the ownerId from the session
+                messageOwner.ownerId = Convert.ToInt32(Session["owner"]);
+
+                if (ModelState.IsValid)
+                {
+                    db.messageOwners.Add(messageOwner);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+
+                ViewBag.managerId = new SelectList(db.managers, "managerId", "name", messageOwner.managerId);
+                return View(messageOwner);
             }
 
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", messageOwner.managerId);
-            ViewBag.ownerId = new SelectList(db.owners, "ownerId", "name", messageOwner.ownerId);
-            return View(messageOwner);
+            return RedirectToAction("Index", "Home"); // Redirect if not an owner
         }
 
         // GET: MessageOwner/Edit/5
@@ -85,67 +115,51 @@ namespace prjRentalManagement.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "messageId,managerId,tenantId,message,responseMessage")] messageManager messageManager)
+        public ActionResult Edit([Bind(Include = "messageId,managerId,ownerId,message,responseMessage")] messageOwner messageOwner)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (messageOwner == null)
                 {
-                    // Validate the existence of the record in the database
-                    var existingMessage = db.messageManagers
-                        .Include(m => m.tenant)
-                        .Include(m => m.manager)
-                        .FirstOrDefault(m => m.messageId == messageManager.messageId);
-
-                    if (existingMessage == null)
-                    {
-                        ModelState.AddModelError("", "The messageManager record was not found.");
-                        return View(messageManager);
-                    }
-
-                    // Validate foreign key relationships
-                    var tenantExists = db.tenants.Any(t => t.tenantId == existingMessage.tenantId);
-                    var managerExists = db.managers.Any(m => m.managerId == existingMessage.managerId);
-
-                    if (!tenantExists)
-                    {
-                        ModelState.AddModelError("", "The associated tenant does not exist.");
-                        return View(messageManager);
-                    }
-
-                    if (!managerExists)
-                    {
-                        ModelState.AddModelError("", "The associated manager does not exist.");
-                        return View(messageManager);
-                    }
-
-                    // Update only the responseMessage field
-                    existingMessage.responseMessage = messageManager.responseMessage;
-
-                    // Save changes to the database
-                    db.Entry(existingMessage).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    return RedirectToAction("Index");
+                    throw new ArgumentNullException(nameof(messageOwner), "messageOwner object is null.");
                 }
-                catch (System.Data.Entity.Validation.DbEntityValidationException)
+
+                // Retrieve the existing message from the database
+                var existingMessage = db.messageOwners.Find(messageOwner.messageId);
+                if (existingMessage == null)
                 {
-                    ModelState.AddModelError("", "Validation failed. Please check the inputs.");
+                    ModelState.AddModelError("", "The messageOwner record was not found.");
+                    return View(messageOwner);
                 }
-                catch (System.Data.SqlClient.SqlException)
+
+                // Check the session to determine the role
+                if (Session["owner"] != null)
                 {
-                    ModelState.AddModelError("", "Database error occurred. Please ensure all foreign keys are valid.");
+                    // Owner updating their message
+                    existingMessage.message = messageOwner.message; // Update the message
                 }
-                catch (Exception)
+                else if (Session["manager"] != null)
                 {
-                    ModelState.AddModelError("", "An unexpected error occurred. Please try again.");
+                    // Manager updating their response
+                    existingMessage.responseMessage = messageOwner.responseMessage; // Update responseMessage
                 }
+                else
+                {
+                    // Invalid session
+                    return RedirectToAction("Index", "Home");
+                }
+
+                db.Entry(existingMessage).State = EntityState.Modified;
+                db.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred while updating the message. Please try again.");
             }
 
-            // Rebind dropdowns in case of error
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", messageManager.managerId);
-            ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", messageManager.tenantId);
-            return View(messageManager);
+            return View(messageOwner);
         }
 
         // GET: MessageOwner/Delete/5

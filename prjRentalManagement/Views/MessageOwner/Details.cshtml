@@ -1,10 +1,9 @@
 ﻿@model prjRentalManagement.Models.messageOwner
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Message Owner Details";
 }
-<h2>Details</h2>
+<h2>Message Owner Details</h2>
 <div>
-    <h4>messageOwner</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -13,6 +12,20 @@
 
         <dd>
             @Html.DisplayFor(model => model.message)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.responseMessage)
+        </dt>
+        <dd>
+            @if (Model.responseMessage == null)
+            {
+                <span class="text-muted">No response message yet.</span>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.responseMessage)
+            }
         </dd>
 
         <dt>
@@ -30,10 +43,9 @@
         <dd>
             @Html.DisplayFor(model => model.owner.name)
         </dd>
-
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.messageId }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Edit", "Edit", new { id = Model.messageId }, new { @class = "btn btn-primary" }) |
+    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary" })
 </p>

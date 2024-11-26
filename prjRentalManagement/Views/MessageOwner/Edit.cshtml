@@ -1,48 +1,76 @@
 ﻿@model prjRentalManagement.Models.messageOwner
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Edit Message";
 }
-<h2>Edit</h2>
+<h2>Edit Message</h2>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>messageOwner</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.messageId)
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ownerId, "ownerId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("ownerId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.ownerId, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    <!-- Hidden fields -->
+    @Html.HiddenFor(model => model.messageId)
+    @Html.Hidden("managerId", Session["manager"]?.ToString() ?? Model.managerId.ToString())
+    @Html.Hidden("ownerId", Session["owner"]?.ToString() ?? Model.ownerId.ToString())
 
+    @* Editable fields based on the session role *@
+    @if (Session["owner"] != null)
+    {
         <div class="form-group">
-            @Html.LabelFor(model => model.managerId, "managerId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("managerId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.managerId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.message, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            @Html.LabelFor(model => model.message, htmlAttributes: new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10 mt-2">
                 @Html.EditorFor(model => model.message, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.message, "", new { @class = "text-danger" })
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+        <div class="form-group mt-2">
+            @Html.LabelFor(model => model.responseMessage, htmlAttributes: new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10 mt-2">
+                @if (string.IsNullOrWhiteSpace(Model.responseMessage))
+                {
+                    <span class="text-muted">No response yet</span>
+                }
+                else
+                {
+                    @Html.DisplayFor(model => model.responseMessage)
+                }
             </div>
         </div>
+    }
+    else if (Session["manager"] != null)
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.message, htmlAttributes: new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.message)
+            </div>
+        </div>
+        <div class="form-group mt-2">
+            @Html.LabelFor(model => model.responseMessage, htmlAttributes: new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.responseMessage, new
+                   {
+                       htmlAttributes = new
+                       {
+                           @class = "form-control",
+                           placeholder = Model.responseMessage == null ? "Add your response here..." : null
+                       }
+                   })
+                @Html.ValidationMessageFor(model => model.responseMessage, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    }
+
+    <div class="form-group mt-3 mb-3">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-success" />
+        </div>
     </div>
+</div>
 }
 
 <div>
