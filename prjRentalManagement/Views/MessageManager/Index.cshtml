@@ -2,7 +2,8 @@
 @{
     ViewBag.Title = "Index";
 }
-@*Dynamic Title based on Session*@
+
+@* Dynamic Title Based on the Session *@
 @if (Session["manager"] != null)
 {
     <h2>Tenant Messages</h2>
@@ -11,23 +12,31 @@
 {
     <h2>Manager Messages</h2>
 }
-@*Provides a link to create a new message by invoking the Create action of the controller*@
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+
+@* Provides a link to create a new message (for Manager) *@
+@if (Session["manager"] != null)
+{
+    <p>
+        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary" })
+    </p>
+}
+
 <table class="table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.message)
         </th>
-        @*Manager Name: displayed only if the current user is NOT a manager*@
+        <th>
+            @Html.DisplayNameFor(model => model.responseMessage)
+        </th>
+        @* Manager Name: Displayed only if the current user is NOT a manager *@
         @if (Session["manager"] == null)
         {
             <th>
                 @Html.DisplayNameFor(model => model.manager.name)
             </th>
         }
-        @*Tenant Name: displayed only if the current user is NOT a tenant*@
+        @* Tenant Name: Displayed only if the current user is NOT a tenant *@
         @if (Session["tenant"] == null)
         {
             <th>
@@ -36,60 +45,50 @@
         }
         <th></th>
     </tr>
-    @*--Filtering Messages based on Session*@
-    @*1. For Tenants -> Only messages for logged-in tenant are displayed*@
+
+    @* Filtering Messages Based on Session *@
     @if (Session["manager"] == null)
     {
+        @* 1. For Tenants: Only messages for logged-in tenant are displayed *@
         foreach (var item in Model.Where(i => i.tenantId == Convert.ToInt32(Session["tenant"])))
         {
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.message)
                 </td>
-                @if (Session["manager"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.manager.name)
-                    </td>
-                }
-                @if (Session["tenant"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.tenant.name)
-                    </td>
-                }
-                @*Action links (Edit/Details/Delete) allow tenants to interact with msg they are associated with*@
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.messageId }) |
+                    @Html.DisplayFor(modelItem => item.responseMessage)
+                </td>
+                @* Display the Manager's Name for the Tenant's View *@
+                <td>
+                    @Html.DisplayFor(modelItem => item.manager.name)
+                </td>
+                <td>
                     @Html.ActionLink("Details", "Details", new { id = item.messageId }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.messageId })
                 </td>
             </tr>
         }
     }
-    @*2.For Managers -> Only messages for logged-in manager are displayed *@
     else
     {
+        @* 2. For Managers: Only messages for logged-in manager are displayed *@
         foreach (var item in Model.Where(i => i.managerId == Convert.ToInt32(Session["manager"])))
         {
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.message)
                 </td>
-                @if (Session["manager"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.manager.name)
-                    </td>
-                }
-                @if (Session["tenant"] == null)
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.tenant.name)
-                    </td>
-                }
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.messageId }) |
+                    @Html.DisplayFor(modelItem => item.responseMessage)
+                </td>
+                @* Display the Tenant's Name for the Manager's View *@
+                <td>
+                    @Html.DisplayFor(modelItem => item.tenant.name)
+                </td>
+                <td>
+                    @* Managers can only edit the `responseMessage` (not the original message) *@
+                    @Html.ActionLink("Edit Response", "Edit", new { id = item.messageId }) |
                     @Html.ActionLink("Details", "Details", new { id = item.messageId }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.messageId })
                 </td>
@@ -97,4 +96,3 @@
         }
     }
 </table>
-

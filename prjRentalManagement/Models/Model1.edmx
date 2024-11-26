@@ -56,6 +56,7 @@
           <Property Name="managerId" Type="int" Nullable="false" />
           <Property Name="tenantId" Type="int" Nullable="false" />
           <Property Name="message" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="responseMessage" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="messageOwner">
           <Key>
@@ -324,6 +325,7 @@
           <Property Name="message" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="manager" Relationship="Self.FK_messageManager_manager" FromRole="messageManager" ToRole="manager" />
           <NavigationProperty Name="tenant" Relationship="Self.FK_messageManager_tenant" FromRole="messageManager" ToRole="tenant" />
+          <Property Name="responseMessage" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="messageOwner">
           <Key>
@@ -587,6 +589,7 @@
           <EntitySetMapping Name="messageManagers">
             <EntityTypeMapping TypeName="DbPropertyRentalModel.messageManager">
               <MappingFragment StoreEntitySet="messageManager">
+                <ScalarProperty Name="responseMessage" ColumnName="responseMessage" />
                 <ScalarProperty Name="messageId" ColumnName="messageId" />
                 <ScalarProperty Name="managerId" ColumnName="managerId" />
                 <ScalarProperty Name="tenantId" ColumnName="tenantId" />

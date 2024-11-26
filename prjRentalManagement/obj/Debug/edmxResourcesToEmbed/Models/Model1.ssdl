@@ -51,6 +51,7 @@
     <Property Name="managerId" Type="int" Nullable="false" />
     <Property Name="tenantId" Type="int" Nullable="false" />
     <Property Name="message" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="responseMessage" Type="nvarchar" MaxLength="100" />
   </EntityType>
   <EntityType Name="messageOwner">
     <Key>

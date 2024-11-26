@@ -2,47 +2,53 @@
 @{
     ViewBag.Title = "Edit";
 }
-<h2>Edit</h2>
+<h2>Edit Message Manager</h2>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>messageManager</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.messageId)
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.managerId, "managerId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("managerId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.managerId, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    <!-- Hidden fields -->
+    @Html.HiddenFor(model => model.messageId)
+    @Html.HiddenFor(model => model.message)
+    @Html.HiddenFor(model => model.tenantId)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.tenantId, "tenantId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("tenantId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.tenantId, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    <!-- Manager ID (hidden) -->
+    @Html.Hidden("managerId", Session["manager"]?.ToString() ?? Model.managerId.ToString())
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.message, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.message, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.message, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+    <!-- Read-only display for the message -->
+    <div class="form-group">
+        @Html.LabelFor(model => model.message, htmlAttributes: new { @class = "control-label col-md-2 fw-bold"})
+        <div class="col-md-10">
+            @Html.DisplayFor(model => model.message)
         </div>
     </div>
+
+    <!-- Editable responseMessage field -->
+    <div class="form-group mt-2">
+        <label class="control-label col-md-2 fw-bold">@Html.DisplayNameFor(model => model.responseMessage)</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.responseMessage, new
+               {
+                   htmlAttributes = new
+                   {
+                       @class = "form-control",
+                       placeholder = Model.responseMessage == null ? "No response yet. Add your response here..." : null
+                   }
+               })
+            @Html.ValidationMessageFor(model => model.responseMessage, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group mt-3 mb-3">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-success" />
+        </div>
+    </div>
+</div>
 }
 
 <div>

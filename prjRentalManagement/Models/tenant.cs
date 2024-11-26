@@ -25,24 +25,15 @@ namespace prjRentalManagement.Models
     
         public int tenantId { get; set; }
 
-
-        [Required(ErrorMessage = "Name is required.")]
-        [Display(Name = "Tenant Name")]
+        [Display(Name = "Name")]
         public string name { get; set; }
 
-        [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address.")]
-        [Display(Name = "Email Address")]
+        [Display(Name = "Email")]
         public string email { get; set; }
 
-        [Required(ErrorMessage = "Password is required.")]
-        [DataType(DataType.Password)]
-        [StringLength(64, MinimumLength = 8, ErrorMessage = "The password must be between 8 and 64 characters.")]
         [Display(Name = "Password")]
         public string password { get; set; }
 
-        [Required(ErrorMessage = "Phone Number is required.")]
-        [RegularExpression(@"^(\+1\s?)?(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})$", ErrorMessage = "Invalid Canadian Phone Number.")]
         [Display(Name = "Phone Number")]
         public string phoneNumber { get; set; }
     

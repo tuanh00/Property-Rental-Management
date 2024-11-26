@@ -51,6 +51,7 @@
     <EntitySetMapping Name="messageManagers">
       <EntityTypeMapping TypeName="DbPropertyRentalModel.messageManager">
         <MappingFragment StoreEntitySet="messageManager">
+          <ScalarProperty Name="responseMessage" ColumnName="responseMessage" />
           <ScalarProperty Name="messageId" ColumnName="messageId" />
           <ScalarProperty Name="managerId" ColumnName="managerId" />
           <ScalarProperty Name="tenantId" ColumnName="tenantId" />

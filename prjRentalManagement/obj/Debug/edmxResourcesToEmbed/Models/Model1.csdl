@@ -64,6 +64,7 @@
     <Property Name="message" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
     <NavigationProperty Name="manager" Relationship="Self.FK_messageManager_manager" FromRole="messageManager" ToRole="manager" />
     <NavigationProperty Name="tenant" Relationship="Self.FK_messageManager_tenant" FromRole="messageManager" ToRole="tenant" />
+    <Property Name="responseMessage" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="messageOwner">
     <Key>

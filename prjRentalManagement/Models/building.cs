@@ -20,7 +20,7 @@ namespace prjRentalManagement.Models
         {
             this.apartments = new HashSet<apartment>();
         }
-
+    
         public int buildingId { get; set; }
 
         [Required(ErrorMessage = "Address is required.")]

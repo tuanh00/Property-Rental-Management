@@ -85,17 +85,67 @@ namespace prjRentalManagement.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "messageId,ownerId,managerId,message")] messageOwner messageOwner)
+        public ActionResult Edit([Bind(Include = "messageId,managerId,tenantId,message,responseMessage")] messageManager messageManager)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(messageOwner).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    // Validate the existence of the record in the database
+                    var existingMessage = db.messageManagers
+                        .Include(m => m.tenant)
+                        .Include(m => m.manager)
+                        .FirstOrDefault(m => m.messageId == messageManager.messageId);
+
+                    if (existingMessage == null)
+                    {
+                        ModelState.AddModelError("", "The messageManager record was not found.");
+                        return View(messageManager);
+                    }
+
+                    // Validate foreign key relationships
+                    var tenantExists = db.tenants.Any(t => t.tenantId == existingMessage.tenantId);
+                    var managerExists = db.managers.Any(m => m.managerId == existingMessage.managerId);
+
+                    if (!tenantExists)
+                    {
+                        ModelState.AddModelError("", "The associated tenant does not exist.");
+                        return View(messageManager);
+                    }
+
+                    if (!managerExists)
+                    {
+                        ModelState.AddModelError("", "The associated manager does not exist.");
+                        return View(messageManager);
+                    }
+
+                    // Update only the responseMessage field
+                    existingMessage.responseMessage = messageManager.responseMessage;
+
+                    // Save changes to the database
+                    db.Entry(existingMessage).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
+                catch (System.Data.Entity.Validation.DbEntityValidationException)
+                {
+                    ModelState.AddModelError("", "Validation failed. Please check the inputs.");
+                }
+                catch (System.Data.SqlClient.SqlException)
+                {
+                    ModelState.AddModelError("", "Database error occurred. Please ensure all foreign keys are valid.");
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "An unexpected error occurred. Please try again.");
+                }
             }
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", messageOwner.managerId);
-            ViewBag.ownerId = new SelectList(db.owners, "ownerId", "name", messageOwner.ownerId);
-            return View(messageOwner);
+
+            // Rebind dropdowns in case of error
+            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", messageManager.managerId);
+            ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", messageManager.tenantId);
+            return View(messageManager);
         }
 
         // GET: MessageOwner/Delete/5
