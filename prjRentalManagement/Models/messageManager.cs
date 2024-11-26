@@ -15,18 +15,17 @@ namespace prjRentalManagement.Models
 
     public partial class messageManager
     {
-
         public int messageId { get; set; }
         public int managerId { get; set; }
         public int tenantId { get; set; }
 
         [Required(ErrorMessage = "Message is required.")]
         [Display(Name = "Message")]
-
         public string message { get; set; }
 
         [Display(Name = "Response Message")]
         public string responseMessage { get; set; }
+    
         public virtual manager manager { get; set; }
         public virtual tenant tenant { get; set; }
     }

@@ -66,6 +66,7 @@
           <Property Name="ownerId" Type="int" Nullable="false" />
           <Property Name="managerId" Type="int" Nullable="false" />
           <Property Name="message" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="responseMessage" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="owner">
           <Key>
@@ -337,6 +338,7 @@
           <Property Name="message" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="manager" Relationship="Self.FK_messageOwner_manager" FromRole="messageOwner" ToRole="manager" />
           <NavigationProperty Name="owner" Relationship="Self.FK_messageOwner_owner" FromRole="messageOwner" ToRole="owner" />
+          <Property Name="responseMessage" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="owner">
           <Key>
@@ -600,6 +602,7 @@
           <EntitySetMapping Name="messageOwners">
             <EntityTypeMapping TypeName="DbPropertyRentalModel.messageOwner">
               <MappingFragment StoreEntitySet="messageOwner">
+                <ScalarProperty Name="responseMessage" ColumnName="responseMessage" />
                 <ScalarProperty Name="messageId" ColumnName="messageId" />
                 <ScalarProperty Name="ownerId" ColumnName="ownerId" />
                 <ScalarProperty Name="managerId" ColumnName="managerId" />

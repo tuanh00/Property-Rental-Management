@@ -16,7 +16,6 @@ namespace prjRentalManagement.Models
     public partial class appointment
     {
         public int appointmentId { get; set; }
-
         public int managerId { get; set; }
         public int tenantId { get; set; }
 

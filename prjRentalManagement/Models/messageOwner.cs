@@ -11,13 +11,21 @@ namespace prjRentalManagement.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
+
     public partial class messageOwner
     {
         public int messageId { get; set; }
         public int ownerId { get; set; }
         public int managerId { get; set; }
+
+        [Required(ErrorMessage = "Message is required.")]
+        [Display(Name = "Message")]
         public string message { get; set; }
+
+        [Display(Name = "Response Message")]
+        public string responseMessage { get; set; }
     
         public virtual manager manager { get; set; }
         public virtual owner owner { get; set; }
