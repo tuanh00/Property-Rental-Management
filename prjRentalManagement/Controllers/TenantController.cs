@@ -18,7 +18,7 @@ namespace prjRentalManagement.Controllers
         private DbPropertyRentalEntities db = new DbPropertyRentalEntities();
 
         // GET: Tenant
-        public ActionResult Index()
+        public ActionResult Index(string searchQuery)
         {
             // Redirect to Home if no owner or tenant session is active
             if (Session["owner"] == null && Session["tenant"] == null)
@@ -29,10 +29,19 @@ namespace prjRentalManagement.Controllers
             // If owner is logged in, show all tenants
             if (Session["owner"] != null)
             {
-                return View(db.tenants.ToList());
+                // If the owner is logged in, filter tenants based on the search query
+                var tenants = db.tenants.AsQueryable();
+
+                if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    tenants = tenants.Where(t => t.email.Contains(searchQuery));
+                }
+
+                // Pass the filtered list to the view
+                return View(tenants.ToList());
             }
 
-            // If a tenant is logged in, show only their details
+            // If a tenant is logged in, show only their information
             if (Session["tenant"] != null)
             {
                 int tenantId = Convert.ToInt32(Session["tenant"]);

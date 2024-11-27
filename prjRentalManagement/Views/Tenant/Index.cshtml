@@ -3,74 +3,96 @@
 @{
     ViewBag.Title = "Tenant Dashboard";
 }
+
 @if (Session["owner"] != null)
 {
     <h2>All Tenants</h2>
+    <div class="search-bar-container mb-3">
+        <form method="get" action="@Url.Action("Index", "Tenant")">
+            <div style="display: flex;">
+                <input type="text"
+                       name="searchQuery"
+                       class="form-control search-bar"
+                       placeholder="Search by email..."
+                       value="@Request.QueryString["searchQuery"]" />
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
 }
-else if (Session["tenant"] != null)
+
+@if (Session["tenant"] != null)
 {
     <h2>Your Information</h2>
 }
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.phoneNumber)
-        </th>
-        <th>
-            Actions
-        </th>
-    </tr>
 
-    @if (Session["tenant"] != null)
-    {
-        foreach (var item in Model.Where(i => i.tenantId == Convert.ToInt32(Session["tenant"])))
+@if (!Model.Any())
+{
+    <!-- Message for no results -->
+    <p class="text-danger">No tenants found matching your search criteria.</p>
+}
+else
+{
+    <!-- Table of tenants -->
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().phoneNumber)
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+
+        @if (Session["tenant"] != null)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.phoneNumber)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.tenantId }, new { @class = "btn btn-warning btn-sm" })
-                    @Html.ActionLink("Details", "Details", new { id = item.tenantId }, new { @class = "btn btn-info btn-sm" })
-                    @Html.ActionLink("Delete", "Delete", new { id = item.tenantId }, new { @class = "btn btn-danger btn-sm" })
-                </td>
-            </tr>
+            foreach (var item in Model.Where(i => i.tenantId == Convert.ToInt32(Session["tenant"])))
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.phoneNumber)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.tenantId }, new { @class = "btn btn-warning btn-sm" })
+                        @Html.ActionLink("Details", "Details", new { id = item.tenantId }, new { @class = "btn btn-info btn-sm" })
+                        @Html.ActionLink("Delete", "Delete", new { id = item.tenantId }, new { @class = "btn btn-danger btn-sm" })
+                    </td>
+                </tr>
+            }
         }
-    }
-    else
-    {
-        foreach (var item in Model)
+        else
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.phoneNumber)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.tenantId }, new { @class = "btn btn-warning btn-sm" }) 
-                    @Html.ActionLink("Details", "Details", new { id = item.tenantId }, new { @class = "btn btn-info btn-sm" }) 
-                    @Html.ActionLink("Delete", "Delete", new { id = item.tenantId }, new { @class = "btn btn-danger btn-sm" })
-                </td>
-            </tr>
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.phoneNumber)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.tenantId }, new { @class = "btn btn-warning btn-sm" })
+                        @Html.ActionLink("Details", "Details", new { id = item.tenantId }, new { @class = "btn btn-info btn-sm" })
+                        @Html.ActionLink("Delete", "Delete", new { id = item.tenantId }, new { @class = "btn btn-danger btn-sm" })
+                    </td>
+                </tr>
+            }
         }
-    }
-
-
-</table>
+    </table>
+}
