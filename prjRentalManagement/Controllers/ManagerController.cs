@@ -95,51 +95,83 @@ namespace prjRentalManagement.Controllers
             return View(manager);
         }
 
-        // GET: Manager/Edit/5
+        // GET: Manager/Edit/5 ->wrap manager info sent to the Edit view through ID
         public ActionResult Edit(int? id)
         {
             if (Session["owner"] == null && Session["manager"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
+
             manager manager = db.managers.Find(id);
             if (manager == null)
             {
                 return HttpNotFound();
             }
-            // Managers can only edit their own information
-            if (Session["manager"] != null && (int)Session["manager"] != manager.managerId)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-            }
+
             return View(manager);
         }
 
         // POST: Manager/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "managerId,name,email,password,phoneNumber")] manager manager)
         {
+            // Step 1: Verify session validity for owner or manager
             if (Session["owner"] == null && Session["manager"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            // Step 2: Restrict managers from editing other manager accounts
             if (Session["manager"] != null && (int)Session["manager"] != manager.managerId)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-            if (ModelState.IsValid)
+
+            // Step 3: Validate the model state (manager model) or handle blank password scenarios
+            if (ModelState.IsValid || (ModelState.ContainsKey("password") && string.IsNullOrWhiteSpace(Request.Form["password"])))
             {
-                // Hash the password if it's changed
-                manager.password = ComputeSha256Hash(manager.password);
-                db.Entry(manager).State = EntityState.Modified;
+                // Step 4: Fetch the existing manager record from the database
+                var existingManager = db.managers.Find(manager.managerId);
+                if (existingManager == null)
+                {
+                    return HttpNotFound(); // Return 404 Error page if the manager doesn't exist
+                }
+
+                // Step 5: Update non-password fields (name, email, phoneNumber)
+                existingManager.name = manager.name;
+                existingManager.email = manager.email;
+                existingManager.phoneNumber = manager.phoneNumber;
+
+                // Step 6: Handle password updates or retention
+                if (string.IsNullOrWhiteSpace(Request.Form["password"]))
+                {
+                    // If no new password is provided, retain the current password
+                    ModelState.Remove("password"); // Remove password validation coming from manager model) error for blank passwords
+                    existingManager.password = Request.Form["currentPassword"]; // Keep the existing password
+                }
+                else
+                {
+                    string newPassword = Request.Form["password"];
+                    string hashedPassword = ComputeSha256Hash(newPassword);
+                    existingManager.password = hashedPassword;
+                }
+
+                // Step 7: Mark the entity as modified and save changes to the database
+                db.Entry(existingManager).State = EntityState.Modified;
                 db.SaveChanges();
+
+                // Step 8: Redirect back to the Index page after successful save
                 return RedirectToAction("Index");
             }
+
+            // Step 9: If validation fails, return to the Edit view with the current data
             return View(manager);
         }
+
+
 
         // GET: Manager/Delete/5
         public ActionResult Delete(int? id)

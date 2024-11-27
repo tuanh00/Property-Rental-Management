@@ -58,9 +58,9 @@
                 </td>
                 <td>@Html.DisplayFor(modelItem => item.manager.name)</td>
                 <td>
-                    @Html.ActionLink("Edit Message", "Edit", new { id = item.messageId }, new { @class = "btn btn-sm btn-warning" }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.messageId }, new { @class = "btn btn-sm btn-info" }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.messageId }, new { @class = "btn btn-sm btn-danger" })
+                    @Html.ActionLink("Edit Message", "Edit", new { id = item.messageId }, new { @class = "btn btn-warning btn-sm" }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.messageId }, new { @class = "btn btn-info btn-sm" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.messageId }, new { @class = "btn btn-danger btn-sm" })
                 </td>
             </tr>
         }

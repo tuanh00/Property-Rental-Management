@@ -16,7 +16,7 @@ namespace prjRentalManagement.Controllers
     {
         // GET: ManagerAccess
         public ActionResult Index()
-       {
+        {
             return View();
         }
 
@@ -29,23 +29,22 @@ namespace prjRentalManagement.Controllers
 
             using (var context = new DbPropertyRentalEntities())
             {
+                var storedManager = context.managers.SingleOrDefault(x => x.email == log.email);
 
-                bool isValid = context.managers.Any(x => x.email == log.email && x.password == hashedPassword);
-
-                if (isValid)
+                if (storedManager != null)
                 {
-                    Session["manager"] = context.managers.SingleOrDefault(i => i.email == log.email).managerId;
-                    Session["owner"] = null;
-                    Session["tenant"] = null;
+                    // Compare stored hash with hashed input
+                    if (storedManager.password == hashedPassword)
+                    {
+                        Session["manager"] = storedManager.managerId;
+                        Session["owner"] = null;
+                        Session["tenant"] = null;
+                        return RedirectToAction("Index", "Manager");
+                    }
+                }
 
-                    // Redirect to the Manager's Dashboard
-                    return RedirectToAction("Index", "Manager");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid Email or Password.");
-                    return View();
-                }
+                ModelState.AddModelError(string.Empty, "Invalid Email or Password.");
+                return View();
             }
         }
 

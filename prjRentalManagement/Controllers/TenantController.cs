@@ -87,22 +87,26 @@ namespace prjRentalManagement.Controllers
             return View(tenant);
         }
 
-        // GET: Tenant/Edit/5
-        public ActionResult Edit(int? id)
+        // GET: Tenant/Edit/5 -> wrap tenant info sent to the Edit view through ID
+        public ActionResult Edit(int? id) 
         {
             if (Session["owner"] == null && Session["tenant"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
+
             tenant tenant = db.tenants.Find(id);
             if (tenant == null)
             {
                 return HttpNotFound();
             }
+
+            // Restrict tenants from editing other tenants
             if (Session["tenant"] != null && (int)Session["tenant"] != tenant.tenantId)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
+
             return View(tenant);
         }
 
@@ -113,22 +117,55 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "tenantId,name,email,password,phoneNumber")] tenant tenant)
         {
+            // Step 1: Verify session validity for owner or tenant
             if (Session["owner"] == null && Session["tenant"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            // Step 2: Restrict tenants from editing other tenant accounts
             if (Session["tenant"] != null && (int)Session["tenant"] != tenant.tenantId)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
+
+            // Step 3: Fetch the existing tenant record from the database
+            var existingTenant = db.tenants.Find(tenant.tenantId);
+            if (existingTenant == null)
+            {
+                return HttpNotFound(); // Return 404 Error page if the tenant doesn't exist
+            }
+
+            // Step 4: Retain the existing password if the new password field is blank
+            if (string.IsNullOrWhiteSpace(Request.Form["password"]))
+            {
+                // Keep the existing password
+                ModelState.Remove("password"); // Skip validation for the blank password
+                existingTenant.password = Request.Form["currentPassword"];
+            }
+            else
+            {
+                // Let the model validation handle the password requirements
+                existingTenant.password = ComputeSha256Hash(Request.Form["password"]);
+            }
+
+            // Step 5: Validate the model
             if (ModelState.IsValid)
             {
-                // Hash the password if it's changed
-                tenant.password = ComputeSha256Hash(tenant.password);
-                db.Entry(tenant).State = EntityState.Modified;
+                // Step 6: Update non-password fields (name, email, phoneNumber)
+                existingTenant.name = tenant.name;
+                existingTenant.email = tenant.email;
+                existingTenant.phoneNumber = tenant.phoneNumber;
+
+                // Step 7: Save changes to the database
+                db.Entry(existingTenant).State = EntityState.Modified;
                 db.SaveChanges();
+
+                // Step 8: Redirect back to the Index page after successful save
                 return RedirectToAction("Index");
             }
+
+            // Step 9: If validation fails, return to the Edit view with the current data
             return View(tenant);
         }
 
@@ -149,16 +186,10 @@ namespace prjRentalManagement.Controllers
             // Tenants can only delete their own account
             if (Session["tenant"] != null && (int)Session["tenant"] != tenant.tenantId)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden); // Unauthorized access
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
 
-            // Redirect to Home if no valid session
-            if (Session["owner"] == null && Session["tenant"] == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            return View(tenant);
+            return View(tenant); // Render a confirmation view for deletion
         }
 
         // POST: Tenant/Delete/5
