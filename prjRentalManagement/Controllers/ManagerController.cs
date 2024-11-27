@@ -17,24 +17,32 @@ namespace prjRentalManagement.Controllers
         private DbPropertyRentalEntities db = new DbPropertyRentalEntities();
 
         // GET: Manager -> Depends on Owner | Manager session
-        public ActionResult Index()
-        {
-            // Check if the user is an owner or manager
+        public ActionResult Index(string searchQuery)
+        { // Check if the user is an owner or manager
             if (Session["owner"] == null && Session["manager"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
-            // If an owner is logged in, show the full list of managers
+
+            // If the owner is logged in, allow filtering of managers by email
             if (Session["owner"] != null)
             {
-                return View(db.managers.ToList());
+                var managers = db.managers.AsQueryable();
+
+                if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    managers = managers.Where(m => m.email.Contains(searchQuery));
+                }
+
+                return View(managers.ToList());
             }
+
             // If a manager is logged in, show only their information
             if (Session["manager"] != null)
             {
                 int managerId = Convert.ToInt32(Session["manager"]);
                 var managerInfo = db.managers.Where(m => m.managerId == managerId).ToList();
-                return View(managerInfo); // Pass the manager's info to the view
+                return View(managerInfo);
             }
 
             return RedirectToAction("Index", "Home"); // Fallback
