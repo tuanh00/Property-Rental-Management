@@ -38,6 +38,18 @@
           <Property Name="ownerId" Type="int" Nullable="false" />
           <Property Name="managerId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="eventOwner">
+          <Key>
+            <PropertyRef Name="eventId" />
+          </Key>
+          <Property Name="eventId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="managerId" Type="int" Nullable="false" />
+          <Property Name="ownerId" Type="int" Nullable="false" />
+          <Property Name="apartmentId" Type="int" Nullable="false" />
+          <Property Name="eventDate" Type="datetime" Nullable="false" />
+          <Property Name="description" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="status" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="manager">
           <Key>
             <PropertyRef Name="managerId" />
@@ -160,6 +172,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_eventOwner_apartment">
+          <End Role="apartment" Type="Self.apartment" Multiplicity="1" />
+          <End Role="eventOwner" Type="Self.eventOwner" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="apartment">
+              <PropertyRef Name="apartmentId" />
+            </Principal>
+            <Dependent Role="eventOwner">
+              <PropertyRef Name="apartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_eventOwner_manager">
+          <End Role="manager" Type="Self.manager" Multiplicity="1" />
+          <End Role="eventOwner" Type="Self.eventOwner" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="manager">
+              <PropertyRef Name="managerId" />
+            </Principal>
+            <Dependent Role="eventOwner">
+              <PropertyRef Name="managerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_eventOwner_owner">
+          <End Role="owner" Type="Self.owner" Multiplicity="1" />
+          <End Role="eventOwner" Type="Self.eventOwner" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="owner">
+              <PropertyRef Name="ownerId" />
+            </Principal>
+            <Dependent Role="eventOwner">
+              <PropertyRef Name="ownerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_messageManager_manager">
           <End Role="manager" Type="Self.manager" Multiplicity="1" />
           <End Role="messageManager" Type="Self.messageManager" Multiplicity="*" />
@@ -212,6 +260,7 @@
           <EntitySet Name="apartment" EntityType="Self.apartment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="appointment" EntityType="Self.appointment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="building" EntityType="Self.building" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="eventOwner" EntityType="Self.eventOwner" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="manager" EntityType="Self.manager" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="messageManager" EntityType="Self.messageManager" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="messageOwner" EntityType="Self.messageOwner" Schema="dbo" store:Type="Tables" />
@@ -240,6 +289,18 @@
           <AssociationSet Name="FK_building_owner" Association="Self.FK_building_owner">
             <End Role="owner" EntitySet="owner" />
             <End Role="building" EntitySet="building" />
+          </AssociationSet>
+          <AssociationSet Name="FK_eventOwner_apartment" Association="Self.FK_eventOwner_apartment">
+            <End Role="apartment" EntitySet="apartment" />
+            <End Role="eventOwner" EntitySet="eventOwner" />
+          </AssociationSet>
+          <AssociationSet Name="FK_eventOwner_manager" Association="Self.FK_eventOwner_manager">
+            <End Role="manager" EntitySet="manager" />
+            <End Role="eventOwner" EntitySet="eventOwner" />
+          </AssociationSet>
+          <AssociationSet Name="FK_eventOwner_owner" Association="Self.FK_eventOwner_owner">
+            <End Role="owner" EntitySet="owner" />
+            <End Role="eventOwner" EntitySet="eventOwner" />
           </AssociationSet>
           <AssociationSet Name="FK_messageManager_manager" Association="Self.FK_messageManager_manager">
             <End Role="manager" EntitySet="manager" />
@@ -275,6 +336,7 @@
           <Property Name="tenantId" Type="Int32" />
           <NavigationProperty Name="building" Relationship="Self.FK_apartment_building" FromRole="apartment" ToRole="building" />
           <NavigationProperty Name="tenant" Relationship="Self.FK_apartment_tenant" FromRole="apartment" ToRole="tenant" />
+          <NavigationProperty Name="eventOwners" Relationship="DbPropertyRentalModel.FK_eventOwner_apartment" FromRole="apartment" ToRole="eventOwner" />
         </EntityType>
         <EntityType Name="appointment">
           <Key>
@@ -315,6 +377,7 @@
           <NavigationProperty Name="buildings" Relationship="Self.FK_building_manager" FromRole="manager" ToRole="building" />
           <NavigationProperty Name="messageManagers" Relationship="Self.FK_messageManager_manager" FromRole="manager" ToRole="messageManager" />
           <NavigationProperty Name="messageOwners" Relationship="Self.FK_messageOwner_manager" FromRole="manager" ToRole="messageOwner" />
+          <NavigationProperty Name="eventOwners" Relationship="DbPropertyRentalModel.FK_eventOwner_manager" FromRole="manager" ToRole="eventOwner" />
         </EntityType>
         <EntityType Name="messageManager">
           <Key>
@@ -351,6 +414,7 @@
           <Property Name="phoneNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="buildings" Relationship="Self.FK_building_owner" FromRole="owner" ToRole="building" />
           <NavigationProperty Name="messageOwners" Relationship="Self.FK_messageOwner_owner" FromRole="owner" ToRole="messageOwner" />
+          <NavigationProperty Name="eventOwners" Relationship="DbPropertyRentalModel.FK_eventOwner_owner" FromRole="owner" ToRole="eventOwner" />
         </EntityType>
         <EntityType Name="tenant">
           <Key>
@@ -534,7 +598,71 @@
             <End Role="owner" EntitySet="owners" />
             <End Role="messageOwner" EntitySet="messageOwners" />
           </AssociationSet>
+          <EntitySet Name="eventOwners" EntityType="DbPropertyRentalModel.eventOwner" />
+          <AssociationSet Name="FK_eventOwner_apartment" Association="DbPropertyRentalModel.FK_eventOwner_apartment">
+            <End Role="apartment" EntitySet="apartments" />
+            <End Role="eventOwner" EntitySet="eventOwners" />
+          </AssociationSet>
+          <AssociationSet Name="FK_eventOwner_manager" Association="DbPropertyRentalModel.FK_eventOwner_manager">
+            <End Role="manager" EntitySet="managers" />
+            <End Role="eventOwner" EntitySet="eventOwners" />
+          </AssociationSet>
+          <AssociationSet Name="FK_eventOwner_owner" Association="DbPropertyRentalModel.FK_eventOwner_owner">
+            <End Role="owner" EntitySet="owners" />
+            <End Role="eventOwner" EntitySet="eventOwners" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="eventOwner">
+          <Key>
+            <PropertyRef Name="eventId" />
+          </Key>
+          <Property Name="eventId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="managerId" Type="Int32" Nullable="false" />
+          <Property Name="ownerId" Type="Int32" Nullable="false" />
+          <Property Name="apartmentId" Type="Int32" Nullable="false" />
+          <Property Name="eventDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="apartment" Relationship="DbPropertyRentalModel.FK_eventOwner_apartment" FromRole="eventOwner" ToRole="apartment" />
+          <NavigationProperty Name="manager" Relationship="DbPropertyRentalModel.FK_eventOwner_manager" FromRole="eventOwner" ToRole="manager" />
+          <NavigationProperty Name="owner" Relationship="DbPropertyRentalModel.FK_eventOwner_owner" FromRole="eventOwner" ToRole="owner" />
+        </EntityType>
+        <Association Name="FK_eventOwner_apartment">
+          <End Type="DbPropertyRentalModel.apartment" Role="apartment" Multiplicity="1" />
+          <End Type="DbPropertyRentalModel.eventOwner" Role="eventOwner" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="apartment">
+              <PropertyRef Name="apartmentId" />
+            </Principal>
+            <Dependent Role="eventOwner">
+              <PropertyRef Name="apartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_eventOwner_manager">
+          <End Type="DbPropertyRentalModel.manager" Role="manager" Multiplicity="1" />
+          <End Type="DbPropertyRentalModel.eventOwner" Role="eventOwner" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="manager">
+              <PropertyRef Name="managerId" />
+            </Principal>
+            <Dependent Role="eventOwner">
+              <PropertyRef Name="managerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_eventOwner_owner">
+          <End Type="DbPropertyRentalModel.owner" Role="owner" Multiplicity="1" />
+          <End Type="DbPropertyRentalModel.eventOwner" Role="eventOwner" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="owner">
+              <PropertyRef Name="ownerId" />
+            </Principal>
+            <Dependent Role="eventOwner">
+              <PropertyRef Name="ownerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -629,6 +757,19 @@
                 <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="phoneNumber" ColumnName="phoneNumber" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="eventOwners">
+            <EntityTypeMapping TypeName="DbPropertyRentalModel.eventOwner">
+              <MappingFragment StoreEntitySet="eventOwner">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="eventDate" ColumnName="eventDate" />
+                <ScalarProperty Name="apartmentId" ColumnName="apartmentId" />
+                <ScalarProperty Name="ownerId" ColumnName="ownerId" />
+                <ScalarProperty Name="managerId" ColumnName="managerId" />
+                <ScalarProperty Name="eventId" ColumnName="eventId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -13,19 +13,31 @@ namespace prjRentalManagement.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    public partial class messageOwner
+    public partial class eventOwner
     {
-        public int messageId { get; set; }
-        public int ownerId { get; set; }
+        [Display(Name = "Event ID")]
+        public int eventId { get; set; }
+
+        [Display(Name = "Manager ID")]
         public int managerId { get; set; }
 
-        [Required(ErrorMessage = "Message is required.")]
-        [Display(Name = "Message")]
-        public string message { get; set; }
+        [Display(Name = "Owner ID")]
+        public int ownerId { get; set; }
 
-        [Display(Name = "Response Message")]
-        public string responseMessage { get; set; }
+        [Display(Name = "Apartment ID")]
+        public int apartmentId { get; set; }
+
+        [Display(Name = "Event Created Date")]
+        public System.DateTime eventDate { get; set; }
+
+        [Required(ErrorMessage = "Description is required.")]
+        [Display(Name = "Description")]
+        public string description { get; set; }
+
+        [Display(Name = "Event Status")]
+        public string status { get; set; }
     
+        public virtual apartment apartment { get; set; }
         public virtual manager manager { get; set; }
         public virtual owner owner { get; set; }
     }

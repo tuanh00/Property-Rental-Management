@@ -33,6 +33,18 @@
     <Property Name="ownerId" Type="int" Nullable="false" />
     <Property Name="managerId" Type="int" Nullable="false" />
   </EntityType>
+  <EntityType Name="eventOwner">
+    <Key>
+      <PropertyRef Name="eventId" />
+    </Key>
+    <Property Name="eventId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="managerId" Type="int" Nullable="false" />
+    <Property Name="ownerId" Type="int" Nullable="false" />
+    <Property Name="apartmentId" Type="int" Nullable="false" />
+    <Property Name="eventDate" Type="datetime" Nullable="false" />
+    <Property Name="description" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="status" Type="nvarchar" MaxLength="50" Nullable="false" />
+  </EntityType>
   <EntityType Name="manager">
     <Key>
       <PropertyRef Name="managerId" />
@@ -155,6 +167,42 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK_eventOwner_apartment">
+    <End Role="apartment" Type="Self.apartment" Multiplicity="1" />
+    <End Role="eventOwner" Type="Self.eventOwner" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="apartment">
+        <PropertyRef Name="apartmentId" />
+      </Principal>
+      <Dependent Role="eventOwner">
+        <PropertyRef Name="apartmentId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_eventOwner_manager">
+    <End Role="manager" Type="Self.manager" Multiplicity="1" />
+    <End Role="eventOwner" Type="Self.eventOwner" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="manager">
+        <PropertyRef Name="managerId" />
+      </Principal>
+      <Dependent Role="eventOwner">
+        <PropertyRef Name="managerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_eventOwner_owner">
+    <End Role="owner" Type="Self.owner" Multiplicity="1" />
+    <End Role="eventOwner" Type="Self.eventOwner" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="owner">
+        <PropertyRef Name="ownerId" />
+      </Principal>
+      <Dependent Role="eventOwner">
+        <PropertyRef Name="ownerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK_messageManager_manager">
     <End Role="manager" Type="Self.manager" Multiplicity="1" />
     <End Role="messageManager" Type="Self.messageManager" Multiplicity="*" />
@@ -207,6 +255,7 @@
     <EntitySet Name="apartment" EntityType="Self.apartment" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="appointment" EntityType="Self.appointment" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="building" EntityType="Self.building" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="eventOwner" EntityType="Self.eventOwner" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="manager" EntityType="Self.manager" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="messageManager" EntityType="Self.messageManager" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="messageOwner" EntityType="Self.messageOwner" Schema="dbo" store:Type="Tables" />
@@ -235,6 +284,18 @@
     <AssociationSet Name="FK_building_owner" Association="Self.FK_building_owner">
       <End Role="owner" EntitySet="owner" />
       <End Role="building" EntitySet="building" />
+    </AssociationSet>
+    <AssociationSet Name="FK_eventOwner_apartment" Association="Self.FK_eventOwner_apartment">
+      <End Role="apartment" EntitySet="apartment" />
+      <End Role="eventOwner" EntitySet="eventOwner" />
+    </AssociationSet>
+    <AssociationSet Name="FK_eventOwner_manager" Association="Self.FK_eventOwner_manager">
+      <End Role="manager" EntitySet="manager" />
+      <End Role="eventOwner" EntitySet="eventOwner" />
+    </AssociationSet>
+    <AssociationSet Name="FK_eventOwner_owner" Association="Self.FK_eventOwner_owner">
+      <End Role="owner" EntitySet="owner" />
+      <End Role="eventOwner" EntitySet="eventOwner" />
     </AssociationSet>
     <AssociationSet Name="FK_messageManager_manager" Association="Self.FK_messageManager_manager">
       <End Role="manager" EntitySet="manager" />

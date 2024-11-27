@@ -13,7 +13,6 @@ namespace prjRentalManagement.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-
     public partial class tenant
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -39,7 +38,6 @@ namespace prjRentalManagement.Models
         [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
         [StringLength(64, MinimumLength = 8, ErrorMessage = "The password must be between 8 and 64 characters.")]
-
         [Display(Name = "Password")]
         public string password { get; set; }
 

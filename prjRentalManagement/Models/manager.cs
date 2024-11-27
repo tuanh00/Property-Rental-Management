@@ -22,6 +22,7 @@ namespace prjRentalManagement.Models
             this.buildings = new HashSet<building>();
             this.messageManagers = new HashSet<messageManager>();
             this.messageOwners = new HashSet<messageOwner>();
+            this.eventOwners = new HashSet<eventOwner>();
         }
 
         [Display(Name = "Manager ID")]
@@ -55,5 +56,7 @@ namespace prjRentalManagement.Models
         public virtual ICollection<messageManager> messageManagers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<messageOwner> messageOwners { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<eventOwner> eventOwners { get; set; }
     }
 }

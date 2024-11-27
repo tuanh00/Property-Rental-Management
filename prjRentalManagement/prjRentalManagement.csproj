@@ -132,6 +132,7 @@
     <Compile Include="Controllers\ApartmentController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\BuildingController.cs" />
+    <Compile Include="Controllers\EventOwnerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManagerAccessController.cs" />
     <Compile Include="Controllers\ManagerController.cs" />
@@ -151,6 +152,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\building.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\eventOwner.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\manager.cs">
@@ -297,6 +301,11 @@
     <Content Include="Views\MessageOwner\Details.cshtml" />
     <Content Include="Views\MessageOwner\Edit.cshtml" />
     <Content Include="Views\MessageOwner\Index.cshtml" />
+    <Content Include="Views\EventOwner\Create.cshtml" />
+    <Content Include="Views\EventOwner\Delete.cshtml" />
+    <Content Include="Views\EventOwner\Details.cshtml" />
+    <Content Include="Views\EventOwner\Edit.cshtml" />
+    <Content Include="Views\EventOwner\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -23,6 +23,10 @@
         <AssociationConnector Association="DbPropertyRentalModel.FK_messageOwner_manager" ManuallyRouted="false" />
         <AssociationConnector Association="DbPropertyRentalModel.FK_messageManager_tenant" ManuallyRouted="false" />
         <AssociationConnector Association="DbPropertyRentalModel.FK_messageOwner_owner" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="DbPropertyRentalModel.eventOwner" Width="1.5" PointX="10.5" PointY="4.125" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_eventOwner_apartment" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_eventOwner_manager" />
+        <AssociationConnector Association="DbPropertyRentalModel.FK_eventOwner_owner" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -1,0 +1,92 @@
+﻿@model IEnumerable<prjRentalManagement.Models.eventOwner>
+
+@{
+    ViewBag.Title = "Event List";
+}
+
+@* Dynamic Title Based on the Session *@
+@if (Session["manager"] != null)
+{
+    <h2>Manager's Event List</h2>
+}
+else if (Session["owner"] != null)
+{
+    <h2>Owner's Assigned Events</h2>
+}
+
+@* Display "Create New" button only for Managers *@
+@if (Session["manager"] != null)
+{
+    <p>
+        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary" })
+    </p>
+}
+
+@* Check if there are any events to display *@
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        <strong>No events found!</strong> There are no events to display at the moment.
+    </div>
+}
+else
+{
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.eventDate)</th>
+            <th>@Html.DisplayNameFor(model => model.description)</th>
+            <th>@Html.DisplayNameFor(model => model.status)</th>
+            @if (Session["owner"] == null)
+            {
+                <th>@Html.DisplayNameFor(model => model.apartment.status)</th>
+            }
+            @if (Session["manager"] == null)
+            {
+                <th>@Html.DisplayNameFor(model => model.manager.name)</th>
+            }
+            @if (Session["owner"] == null)
+            {
+                <th>@Html.DisplayNameFor(model => model.owner.name)</th>
+            }
+            <th>Actions</th>
+        </tr>
+
+        @* Filtering Events Based on Session *@
+        @if (Session["owner"] != null)
+        {
+            @* For Owners: Display events assigned to the logged-in owner *@
+            foreach (var item in Model.Where(i => i.ownerId == Convert.ToInt32(Session["owner"])))
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.eventDate)</td>
+                    <td>@Html.DisplayFor(modelItem => item.description)</td>
+                    <td>@Html.DisplayFor(modelItem => item.status)</td>
+                    <td>@Html.DisplayFor(modelItem => item.manager.name)</td> @* Add Manager Name column *@
+                    <td>
+                        @Html.ActionLink("Edit Status", "Edit", new { id = item.eventId }, new { @class = "btn btn-warning btn-sm" }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.eventId }, new { @class = "btn btn-info btn-sm" })
+                    </td>
+                </tr>
+            }
+        }
+        else if (Session["manager"] != null)
+        {
+            @* For Managers: Display all events created by the logged-in manager *@
+            foreach (var item in Model.Where(i => i.managerId == Convert.ToInt32(Session["manager"])))
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.eventDate)</td>
+                    <td>@Html.DisplayFor(modelItem => item.description)</td>
+                    <td>@Html.DisplayFor(modelItem => item.status)</td>
+                    <td>@Html.DisplayFor(modelItem => item.apartment.status)</td>
+                    <td>@Html.DisplayFor(modelItem => item.owner.name)</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.eventId }, new { @class = "btn btn-warning btn-sm" }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.eventId }, new { @class = "btn btn-info btn-sm" }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.eventId }, new { @class = "btn btn-danger btn-sm" })
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+}

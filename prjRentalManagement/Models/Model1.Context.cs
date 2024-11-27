@@ -33,5 +33,6 @@ namespace prjRentalManagement.Models
         public virtual DbSet<messageOwner> messageOwners { get; set; }
         public virtual DbSet<owner> owners { get; set; }
         public virtual DbSet<tenant> tenants { get; set; }
+        public virtual DbSet<eventOwner> eventOwners { get; set; }
     }
 }

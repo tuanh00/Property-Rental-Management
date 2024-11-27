@@ -1,0 +1,62 @@
+﻿@model prjRentalManagement.Models.eventOwner
+
+<div>
+    <h4>Event Details</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.eventDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.eventDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.apartment.status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.apartment.status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.manager.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.manager.name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.owner.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.owner.name)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.eventId }, new { @class = "btn btn-success" })
+</p>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

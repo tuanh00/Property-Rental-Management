@@ -15,6 +15,12 @@ namespace prjRentalManagement.Models
 
     public partial class apartment
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public apartment()
+        {
+            this.eventOwners = new HashSet<eventOwner>();
+        }
+    
         public int apartmentId { get; set; }
 
         [Required(ErrorMessage = "Apartment No. is required.")]
@@ -36,7 +42,7 @@ namespace prjRentalManagement.Models
         [Required(ErrorMessage = "Status is required.")]
         [StringLength(10, ErrorMessage = "Status cannot exceed 10 characters.")]
         [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Status must contain only letters and spaces.")]
-        [Display(Name = "Status")]
+        [Display(Name = "Apartment Status")]
         public string status { get; set; }
 
         [Display(Name = "Building ID")]
@@ -47,5 +53,7 @@ namespace prjRentalManagement.Models
     
         public virtual building building { get; set; }
         public virtual tenant tenant { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<eventOwner> eventOwners { get; set; }
     }
 }

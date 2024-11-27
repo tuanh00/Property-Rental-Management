@@ -1,0 +1,67 @@
+﻿@model prjRentalManagement.Models.eventOwner
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Create New Event</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @*The key feature in this view is dynamically updating the "Apartment" dropdown based on the selected "Owner."*@
+    @*Flow: 1. Displays a dropdown of all owners fetched from the OwnerList in the controller ViewBag.OwnerList. When manager selects an owner, the onchange events a Javascript action.
+        2. JS onchange action:
+            - location.href updates the browser URL to make a new request to the Create action in the Create action in the EventOwnerController.
+            - It appends the selected ownerId as a query paramter to the URL: @ownerId=<selected_owner_id>
+        3. Effect: when an owner is selected, the page reloads with a filtered "Apartment" dropdown for the selected owner.*@
+    <div class="form-group mt-2">
+        @Html.LabelFor(model => model.ownerId, "Owner Name", new { @class = "control-label col-md-2 fw-bold" })
+        <div class="col-md-10 mt-2">
+            @Html.DropDownListFor(model => model.ownerId, new SelectList(ViewBag.OwnerList, "Value", "Text"), "Select Owner", new
+            {
+                @class = "form-control",
+                onchange = "location.href='" + Url.Action("Create", "EventOwner") + "?ownerId=' + this.value"
+            })
+            @Html.ValidationMessageFor(model => model.ownerId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group mt-2">
+        @Html.LabelFor(model => model.apartmentId, "Apartment No.", new { @class = "control-label col-md-2 fw-bold" })
+        <div class="col-md-10 mt-2">
+            @Html.DropDownListFor(model => model.apartmentId, new SelectList(ViewBag.ApartmentList, "Value", "Text"), "Select Apartment", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.apartmentId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <!-- Read-only Date Display -->
+    <div class="form-group mt-2">
+        @Html.Label("Event Created Date", new { @class = "control-label col-md-2 fw-bold" })
+        <div class="col-md-10 mt-2">
+            <input type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" style="background-color:#F2F2F2;" readonly />
+        </div>
+    </div>
+
+    <div class="form-group mt-2">
+        @Html.LabelFor(model => model.description, new { @class = "control-label col-md-2 fw-bold" })
+        <div class="col-md-10 mt-2">
+            @Html.EditorFor(model => model.description, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group mt-3 mb-3">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

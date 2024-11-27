@@ -1,0 +1,112 @@
+﻿@model prjRentalManagement.Models.eventOwner
+
+@{
+    ViewBag.Title = "Edit Event";
+    bool isOwner = Session["owner"] != null;
+    bool isManager = Session["manager"] != null;
+}
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jqueryval")
+
+<h2>Edit Event</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.eventId)
+
+        <!-- Manager Name -->
+        <div class="form-group mt-2">
+            @Html.Label("Manager Name", new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10 mt-2">
+                <p class="form-control-static">@Model.manager.name</p>
+            </div>
+        </div>
+
+        <!-- Owner Name -->
+        <div class="form-group mt-2">
+            @Html.Label("Owner Name", new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10 mt-2">
+                <p class="form-control-static">@Model.owner.name</p>
+            </div>
+        </div>
+
+        <!-- Apartment No -->
+        <div class="form-group mt-2">
+            @Html.LabelFor(model => model.apartmentId, "Apartment No.", new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10 mt-2">
+                <p class="form-control-static">@Model.apartment.apartmentNo</p>
+            </div>
+        </div>
+
+        <!-- Event Date -->
+        <div class="form-group mt-2">
+            @Html.Label("Event Created Date", new { @class = "control-label col-md-2 fw-bold" })
+            <div class="col-md-10 mt-2">
+                <p class="form-control-static">@Model.eventDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
+            </div>
+        </div>
+
+        <!-- Description (for Managers only) -->
+        @if (isManager)
+        {
+            <div class="form-group mt-2">
+                @Html.LabelFor(model => model.description, "Description", new { @class = "control-label col-md-2 fw-bold" })
+                <div class="col-md-10 mt-2">
+                    @Html.EditorFor(model => model.description, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group mt-2">
+                @Html.Label("Description", new { @class = "control-label col-md-2 fw-bold" })
+                <div class="col-md-10 mt-2">
+                    <p class="form-control-static">@Model.description</p>
+                </div>
+            </div>
+        }
+
+        <!-- Status (for Owners only) -->
+        @if (isOwner)
+        {
+            <div class="form-group mt-2">
+                @Html.LabelFor(model => model.status, "Status", new { @class = "control-label col-md-2 fw-bold" })
+                <div class="col-md-10 mt-2">
+                    @Html.DropDownListFor(model => model.status, (IEnumerable<SelectListItem>)ViewBag.StatusList, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group mt-2">
+                @Html.Label("Status", new { @class = "control-label col-md-2 fw-bold" })
+                <div class="col-md-10 mt-2">
+                    <p class="form-control-static">@Model.status</p>
+                </div>
+            </div>
+        }
+
+        <!-- Save Button -->
+        <div class="form-group mt-3 mb-3">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+}

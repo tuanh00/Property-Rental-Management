@@ -92,5 +92,18 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="eventOwners">
+      <EntityTypeMapping TypeName="DbPropertyRentalModel.eventOwner">
+        <MappingFragment StoreEntitySet="eventOwner">
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="eventDate" ColumnName="eventDate" />
+          <ScalarProperty Name="apartmentId" ColumnName="apartmentId" />
+          <ScalarProperty Name="ownerId" ColumnName="ownerId" />
+          <ScalarProperty Name="managerId" ColumnName="managerId" />
+          <ScalarProperty Name="eventId" ColumnName="eventId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

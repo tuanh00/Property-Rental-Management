@@ -11,7 +11,8 @@ namespace prjRentalManagement.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class owner
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -19,17 +20,36 @@ namespace prjRentalManagement.Models
         {
             this.buildings = new HashSet<building>();
             this.messageOwners = new HashSet<messageOwner>();
+            this.eventOwners = new HashSet<eventOwner>();
         }
-    
+
+        [Display(Name = "Owner ID")]
         public int ownerId { get; set; }
+
+        [Required(ErrorMessage = "Name is required.")]
+        [Display(Name = "Owner Name")]
         public string name { get; set; }
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address.")]
+        [Display(Name = "Email")]
         public string email { get; set; }
+
+        [Required(ErrorMessage = "Password is required.")]
+        [DataType(DataType.Password)]
+        [StringLength(64, MinimumLength = 8, ErrorMessage = "The password must be between 8 and 64 characters.")]
+        [Display(Name = "Password")]
         public string password { get; set; }
+
+        [RegularExpression(@"^(\+1\s?)?(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})$", ErrorMessage = "Invalid Canadian Phone Number.")]
+        [Display(Name = "Phone Number")]
         public string phoneNumber { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<building> buildings { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<messageOwner> messageOwners { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<eventOwner> eventOwners { get; set; }
     }
 }
