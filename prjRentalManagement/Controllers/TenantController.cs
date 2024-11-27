@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -74,16 +75,28 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "tenantId,name,email,password,phoneNumber")] tenant tenant)
         {
+            // Check if the email already exists in the database
+            if (db.tenants.Any(t => t.email == tenant.email))
+            {
+                // Add a custom error message to the ModelState
+                ModelState.AddModelError("email", "This email is already in use. Please use a different email.");
+            }
+
+            // Proceed only if the ModelState is valid
             if (ModelState.IsValid)
             {
-                //Hash the password 
+                // Hash the password
                 tenant.password = ComputeSha256Hash(tenant.password);
 
+                // Save the tenant to the database
                 db.tenants.Add(tenant);
                 db.SaveChanges();
+
+                // Redirect to the Tenant Access page or any other appropriate action
                 return RedirectToAction("Index", "TenantAccess");
             }
 
+            // If validation fails, return to the Create view with the current data
             return View(tenant);
         }
 
@@ -117,55 +130,76 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "tenantId,name,email,password,phoneNumber")] tenant tenant)
         {
-            // Step 1: Verify session validity for owner or tenant
+            // Step 1: Check if the user is authorized (either owner or the logged-in tenant)
             if (Session["owner"] == null && Session["tenant"] == null)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home"); // Redirect unauthorized users to Home
             }
 
             // Step 2: Restrict tenants from editing other tenant accounts
             if (Session["tenant"] != null && (int)Session["tenant"] != tenant.tenantId)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden); // Return 403 Forbidden for unauthorized access
             }
 
             // Step 3: Fetch the existing tenant record from the database
             var existingTenant = db.tenants.Find(tenant.tenantId);
             if (existingTenant == null)
             {
-                return HttpNotFound(); // Return 404 Error page if the tenant doesn't exist
+                return HttpNotFound(); // Return 404 Not Found if the tenant does not exist
             }
 
-            // Step 4: Retain the existing password if the new password field is blank
+            // Step 4: Validate email uniqueness (excluding the current tenant's email)
+            if (db.tenants.Any(t => t.email == tenant.email && t.tenantId != tenant.tenantId))
+            {
+                // Add an error message if the email is already in use by another tenant
+                ModelState.AddModelError("email", "This email is already in use by another tenant. Please use a different email.");
+            }
+
+            // Step 5: Skip email validation if the email has not changed
+            if (tenant.email == existingTenant.email)
+            {
+                ModelState.Remove("email"); // Remove validation error if the email hasn't changed
+            }
+
+            // Step 6: Retain the existing password if the new password field is left blank
             if (string.IsNullOrWhiteSpace(Request.Form["password"]))
             {
-                // Keep the existing password
-                ModelState.Remove("password"); // Skip validation for the blank password
-                existingTenant.password = Request.Form["currentPassword"];
+                ModelState.Remove("password"); // Remove password validation for blank passwords
+                tenant.password = existingTenant.password; // Keep the existing password
             }
             else
             {
-                // Let the model validation handle the password requirements
-                existingTenant.password = ComputeSha256Hash(Request.Form["password"]);
+                // Hash the new password and set it
+                tenant.password = ComputeSha256Hash(Request.Form["password"]);
             }
 
-            // Step 5: Validate the model
+            // Step 7: Proceed with saving changes only if the ModelState is valid
             if (ModelState.IsValid)
             {
-                // Step 6: Update non-password fields (name, email, phoneNumber)
+                // Update tenant details with new values
                 existingTenant.name = tenant.name;
                 existingTenant.email = tenant.email;
                 existingTenant.phoneNumber = tenant.phoneNumber;
+                existingTenant.password = tenant.password;
 
-                // Step 7: Save changes to the database
-                db.Entry(existingTenant).State = EntityState.Modified;
-                db.SaveChanges();
+                try
+                {
+                    // Step 8: Mark the entity as modified and save changes
+                    db.Entry(existingTenant).State = EntityState.Modified;
+                    db.SaveChanges(); // Persist changes to the database
 
-                // Step 8: Redirect back to the Index page after successful save
-                return RedirectToAction("Index");
+                    // Step 9: Redirect back to the Index page after a successful save
+                    return RedirectToAction("Index");
+                }
+                catch (DbEntityValidationException)
+                {
+                    // Step 10: Add a user-friendly error message if something goes wrong during the save
+                    ModelState.AddModelError("", "An error occurred while saving changes. Please try again.");
+                }
             }
 
-            // Step 9: If validation fails, return to the Edit view with the current data
+            // Step 11: If validation fails, return to the Edit view with the current data
             return View(tenant);
         }
 
