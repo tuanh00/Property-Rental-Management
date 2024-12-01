@@ -18,25 +18,24 @@ namespace prjRentalManagement.Controllers
         public ActionResult Index(string search)
         {
             // Ensure a session is active for tenants or managers
-            if (Session["manager"] == null && Session["tenant"] == null)
+            if (Session["manager"] == null && Session["tenant"] == null && Session["owner"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            IQueryable<apartment> apartments;
+            IQueryable<apartment> apartments = db.apartments
+                   .Include(a => a.building)
+                   .Include(a => a.tenant);
 
             if (Session["manager"] != null)
             {
                 // If a manager is logged in, show apartments related to their managed buildings
                 int managerId = Convert.ToInt32(Session["manager"]);
-                apartments = db.apartments
-                    .Include(a => a.building)
-                    .Include(a => a.tenant)
-                    .Where(a => a.building.managerId == managerId);
+                apartments = apartments.Where(a => a.building.managerId == managerId);
             }
             else
             {
-                // If a tenant is logged in, show all apartments
+                // If a tenant/owner are logged in, show all apartments
                 apartments = db.apartments
                     .Include(a => a.building)
                     .Include(a => a.tenant);

@@ -15,21 +15,33 @@ namespace prjRentalManagement.Controllers
         private DbPropertyRentalEntities db = new DbPropertyRentalEntities();
 
         // GET: Building
-        public ActionResult Index()
+        public ActionResult Index(string search)
         {
-            // Check if a manager is logged in
-            if (Session["manager"] == null)
+            // Check if a manager/owner is logged in
+            if (Session["manager"] == null && Session["owner"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            int managerId = Convert.ToInt32(Session["manager"]);
+            IQueryable<building> buildings = db.buildings.Include(b => b.manager).Include(b => b.owner);
 
-            // Filter buildings based on the logged-in manager
-            var buildings = db.buildings
-                              .Where(b => b.managerId == managerId)
-                              .Include(b => b.manager)
-                              .Include(b => b.owner);
+            // If a manager is logged in, filter buildings based on their management
+            if (Session["manager"] != null)
+            {
+                int managerId = Convert.ToInt32(Session["manager"]);
+                buildings = buildings.Where(b => b.managerId == managerId);
+            }
+            // If an owner is logged in, allow viewing all buildings (no additional filter needed)
+
+            // Apply search filter if provided
+            if (!string.IsNullOrEmpty(search))
+            {
+                buildings = buildings.Where(b =>
+                    b.address.Contains(search) ||
+                    b.city.Contains(search) ||
+                    b.province.Contains(search) ||
+                    b.postalCode.Contains(search));
+            }
 
             return View(buildings.ToList());
         }

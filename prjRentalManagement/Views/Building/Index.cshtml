@@ -4,9 +4,27 @@
 }
 
 <h2>Buildings</h2>
-<p>
-    @Html.ActionLink("Create New Building", "Create", null, new { @class = "btn btn-primary" })
-</p>
+
+<!-- Search Bar -->
+@using (Html.BeginForm("Index", "Building", FormMethod.Get))
+{
+    <div style="text-align:center;margin-bottom:10px">
+        @Html.TextBox("search", ViewBag.Search as string, new
+        {
+            @style = "padding:8px; width:60%;",
+            @placeholder = "Search by address, city, province, postal code, or other criteria..."
+        })
+        <input type="submit" value="Search Building" class="btn btn-primary" />
+    </div>
+}
+
+@if (Session["manager"] != null)
+{
+    <p>
+        @Html.ActionLink("Create New Building", "Create", null, new { @class = "btn btn-primary" })
+    </p>
+}
+
 <table class="table">
     <tr>
         <th>
@@ -27,7 +45,7 @@
         <th>
             @Html.DisplayNameFor(model => model.owner.name)
         </th>
-        <th></th>
+        <th>Actions</th>
     </tr>
 
     @foreach (var item in Model)
@@ -52,9 +70,18 @@
                 @Html.DisplayFor(modelItem => item.owner.name)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.buildingId }, new { @class = "btn btn-warning btn-sm" }) |
-                @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.buildingId }, new { @class = "btn btn-danger btn-sm" })
+                @if (Session["manager"] != null)
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.buildingId }, new { @class = "btn btn-warning btn-sm" }) 
+                    @: |
+                    @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" }) 
+                    @: |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.buildingId }, new { @class = "btn btn-danger btn-sm" })
+                }
+            else if (Session["owner"] != null)
+            {
+            @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" })
+            }
             </td>
         </tr>
     }
