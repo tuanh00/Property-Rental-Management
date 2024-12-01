@@ -51,10 +51,7 @@
         <th>
             @Html.DisplayNameFor(model => model.building.postalCode)
         </th>
-        @if (Session["manager"] != null)
-        {
             <th>Actions</th>
-        }
     </tr>
 
     @foreach (var item in Model)
@@ -87,15 +84,15 @@
             @if (Session["manager"] != null)
             {
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.apartmentId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.apartmentId })
+                    @Html.ActionLink("Edit", "Edit", new { id = item.apartmentId }, new { @class = "btn btn-warning btn-sm" }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId }, new { @class = "btn btn-info btn-sm" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.apartmentId }, new { @class = "btn btn-danger btn-sm" })
                 </td>
             }
             else
             {
                 <td>
-                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId })
+                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId }, new { @class = "btn btn-info btn-sm" })
                 </td>
             }
         </tr>

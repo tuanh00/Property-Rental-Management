@@ -34,6 +34,8 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ownerId }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ownerId }, new { @class = "btn btn-primary" })
 </p>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
