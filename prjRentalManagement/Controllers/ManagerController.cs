@@ -138,48 +138,51 @@ namespace prjRentalManagement.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
 
-            // Step 3: Validate the model state (manager model) or handle blank password scenarios
-            if (ModelState.IsValid || (ModelState.ContainsKey("password") && string.IsNullOrWhiteSpace(Request.Form["password"])))
+            // Step 3: Fetch the existing manager record from the database
+            var existingManager = db.managers.Find(manager.managerId);
+            if (existingManager == null)
             {
-                // Step 4: Fetch the existing manager record from the database
-                var existingManager = db.managers.Find(manager.managerId);
-                if (existingManager == null)
-                {
-                    return HttpNotFound(); // Return 404 Error page if the manager doesn't exist
-                }
+                return HttpNotFound(); // Return 404 Error page if the manager doesn't exist
+            }
 
-                // Step 5: Update non-password fields (name, email, phoneNumber)
-                existingManager.name = manager.name;
+            // Step 4: Check if the email is already used by another manager
+            if (db.managers.Any(m => m.email == manager.email && m.managerId != manager.managerId))
+            {
+                ModelState.AddModelError("email", "This email is already in use by another manager. Please use a different email.");
+            }
+
+            // Step 5: Update non-password fields (name, email, phoneNumber)
+            existingManager.name = manager.name;
+            existingManager.phoneNumber = manager.phoneNumber;
+
+            // Step 6: Handle password updates or retention
+            if (string.IsNullOrWhiteSpace(Request.Form["password"]))
+            {
+                // Retain the existing password if no new password is provided
+                ModelState.Remove("password"); // Remove validation error for password
+            }
+            else
+            {
+                string newPassword = Request.Form["password"];
+                existingManager.password = ComputeSha256Hash(newPassword);
+            }
+
+            // Step 7: Save changes to the database
+            if (ModelState.IsValid)
+            {
+                // Update the email only if ModelState is valid
                 existingManager.email = manager.email;
-                existingManager.phoneNumber = manager.phoneNumber;
 
-                // Step 6: Handle password updates or retention
-                if (string.IsNullOrWhiteSpace(Request.Form["password"]))
-                {
-                    // If no new password is provided, retain the current password
-                    ModelState.Remove("password"); // Remove password validation coming from manager model) error for blank passwords
-                    existingManager.password = Request.Form["currentPassword"]; // Keep the existing password
-                }
-                else
-                {
-                    string newPassword = Request.Form["password"];
-                    string hashedPassword = ComputeSha256Hash(newPassword);
-                    existingManager.password = hashedPassword;
-                }
-
-                // Step 7: Mark the entity as modified and save changes to the database
                 db.Entry(existingManager).State = EntityState.Modified;
                 db.SaveChanges();
 
-                // Step 8: Redirect back to the Index page after successful save
+                // Step 8: Redirect back to the Index page after a successful save
                 return RedirectToAction("Index");
             }
 
             // Step 9: If validation fails, return to the Edit view with the current data
             return View(manager);
         }
-
-
 
         // GET: Manager/Delete/5
         public ActionResult Delete(int? id)
