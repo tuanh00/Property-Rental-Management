@@ -102,6 +102,7 @@ namespace prjRentalManagement.Controllers
         // POST: Owner/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Owner/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ownerId,name,email,password,phoneNumber")] owner owner)
@@ -110,14 +111,48 @@ namespace prjRentalManagement.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
+
+            // Fetch the existing owner record from the database
+            var existingOwner = db.owners.Find(owner.ownerId);
+            if (existingOwner == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Check if the email is already used by another owner
+            if (db.owners.Any(o => o.email == owner.email && o.ownerId != owner.ownerId))
+            {
+                ModelState.AddModelError("email", "This email is already in use by another owner. Please use a different email.");
+            }
+
+            // Update non-password fields (name, email, phoneNumber)
+            existingOwner.name = owner.name;
+            existingOwner.phoneNumber = owner.phoneNumber;
+
+            // Check if a new password has been provided
+            if (string.IsNullOrWhiteSpace(Request.Form["password"]))
+            {
+                // Retain the existing password if no new password is entered
+                ModelState.Remove("password"); // Remove validation error for password
+            }
+            else
+            {
+                // Hash the new password and update
+                string newPassword = Request.Form["password"];
+                existingOwner.password = ComputeSha256Hash(newPassword);
+            }
+
+            // Save changes to the database
             if (ModelState.IsValid)
             {
-                // Hash the password if it's changed
-                owner.password = ComputeSha256Hash(owner.password);
-                db.Entry(owner).State = EntityState.Modified;
+                // Update the email only if ModelState is valid
+                existingOwner.email = owner.email;
+
+                db.Entry(existingOwner).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+
             return View(owner);
         }
 
