@@ -3,6 +3,21 @@
     ViewBag.Title = "Apartments";
 }
 <h2>Apartments</h2>
+
+<!-- Search Bar -->
+@using (Html.BeginForm("Index", "Apartment", FormMethod.Get))
+{
+    <div style="text-align:center;margin-bottom:10px">
+        @Html.TextBox("search", null, new
+        {
+            @style = "padding:8px; width:60%;",
+            @placeholder = "Search by address, city, province, postal code, or other criteria..."
+        })
+        <input type="submit" value="Search Apartment" class="btn btn-primary" />
+    </div>
+}
+
+
 @*The "Create New Apartment" link is displayed only if a property manager is logged in.*@
 @if (Session["manager"] != null)
 {

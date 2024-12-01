@@ -15,19 +15,46 @@ namespace prjRentalManagement.Controllers
         private DbPropertyRentalEntities db = new DbPropertyRentalEntities();
 
         // GET: Apartment
-        public ActionResult Index()
+        public ActionResult Index(string search)
         {
-            // Ensure manager views only their related apartments
-            if (Session["manager"] == null)
+            // Ensure a session is active for tenants or managers
+            if (Session["manager"] == null && Session["tenant"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            int managerId = Convert.ToInt32(Session["manager"]);
-            var apartments = db.apartments
-                .Include(a => a.building)
-                .Include(a => a.tenant)
-                .Where(a => a.building.managerId == managerId);
+            IQueryable<apartment> apartments;
+
+            if (Session["manager"] != null)
+            {
+                // If a manager is logged in, show apartments related to their managed buildings
+                int managerId = Convert.ToInt32(Session["manager"]);
+                apartments = db.apartments
+                    .Include(a => a.building)
+                    .Include(a => a.tenant)
+                    .Where(a => a.building.managerId == managerId);
+            }
+            else
+            {
+                // If a tenant is logged in, show all apartments
+                apartments = db.apartments
+                    .Include(a => a.building)
+                    .Include(a => a.tenant);
+            }
+
+            // Apply search filter if provided
+            if (!string.IsNullOrEmpty(search))
+            {
+                apartments = apartments.Where(a =>
+                    a.apartmentNo.ToString().Contains(search) ||
+                    a.building.address.Contains(search) ||
+                    a.building.city.Contains(search) ||
+                    a.building.province.Contains(search) ||
+                    a.building.postalCode.Contains(search) ||
+                    a.nbRooms.ToString().Contains(search) ||
+                    a.price.ToString().Contains(search) ||
+                    a.status.Contains(search));
+            }
 
             return View(apartments.ToList());
         }
