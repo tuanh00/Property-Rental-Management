@@ -54,16 +54,28 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ownerId,name,email,password,phoneNumber")] owner owner)
         {
+            // Check if the email already exists in the database
+            if (db.owners.Any(o => o.email == owner.email))
+            {
+                // Add a custom error message to the ModelState
+                ModelState.AddModelError("email", "This email is already in use. Please use a different email.");
+            }
+
+            // Proceed only if the ModelState is valid
             if (ModelState.IsValid)
             {
-                //Hash the password 
+                // Hash the password
                 owner.password = ComputeSha256Hash(owner.password);
 
+                // Save the owner to the database
                 db.owners.Add(owner);
                 db.SaveChanges();
+
+                // Redirect to the Owner Access page or any other appropriate action
                 return RedirectToAction("Index", "OwnerAccess");
             }
 
+            // If validation fails, return to the Create view with the current data
             return View(owner);
 
         }
