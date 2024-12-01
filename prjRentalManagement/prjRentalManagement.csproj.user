@@ -23,6 +23,8 @@
     <WebStackScaffolding_DbContextTypeFullName>prjRentalManagement.Models.DbPropertyRentalEntities</WebStackScaffolding_DbContextTypeFullName>
     <WebStackScaffolding_IsViewGenerationSelected>False</WebStackScaffolding_IsViewGenerationSelected>
     <WebStackScaffolding_IsAsyncSelected>False</WebStackScaffolding_IsAsyncSelected>
+    <_SelectedScaffolderID>MvcControllerWithContextScaffolder</_SelectedScaffolderID>
+    <_SelectedScaffolderCategoryPath>root/Common</_SelectedScaffolderCategoryPath>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>

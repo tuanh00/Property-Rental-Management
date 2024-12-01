@@ -17,7 +17,18 @@ namespace prjRentalManagement.Controllers
         // GET: Apartment
         public ActionResult Index()
         {
-            var apartments = db.apartments.Include(a => a.building).Include(a => a.tenant);
+            // Ensure manager views only their related apartments
+            if (Session["manager"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            int managerId = Convert.ToInt32(Session["manager"]);
+            var apartments = db.apartments
+                .Include(a => a.building)
+                .Include(a => a.tenant)
+                .Where(a => a.building.managerId == managerId);
+
             return View(apartments.ToList());
         }
 
@@ -41,9 +52,17 @@ namespace prjRentalManagement.Controllers
         {
             if (Session["manager"] == null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
-            ViewBag.buildingId = new SelectList(db.buildings, "buildingId", "address");
+
+            int managerId = Convert.ToInt32(Session["manager"]);
+
+            // Fetch buildings managed by the logged-in manager
+            ViewBag.buildingId = new SelectList(
+                db.buildings.Where(b => b.managerId == managerId),
+                "buildingId",
+                "address"
+            );
             ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name");
             return View();
         }
@@ -57,8 +76,9 @@ namespace prjRentalManagement.Controllers
         {
             if (Session["manager"] == null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
+
             if (ModelState.IsValid)
             {
                 db.apartments.Add(apartment);
@@ -66,7 +86,13 @@ namespace prjRentalManagement.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.buildingId = new SelectList(db.buildings, "buildingId", "address", apartment.buildingId);
+            int managerId = Convert.ToInt32(Session["manager"]);
+            ViewBag.buildingId = new SelectList(
+                db.buildings.Where(b => b.managerId == managerId),
+                "buildingId",
+                "address",
+                apartment.buildingId
+            );
             ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", apartment.tenantId);
             return View(apartment);
         }
@@ -76,18 +102,35 @@ namespace prjRentalManagement.Controllers
         {
             if (Session["manager"] == null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             apartment apartment = db.apartments.Find(id);
+
             if (apartment == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.buildingId = new SelectList(db.buildings, "buildingId", "address", apartment.buildingId);
+
+            int managerId = Convert.ToInt32(Session["manager"]);
+
+            // Ensure that the manager can only edit apartments within their managed buildings
+            if (apartment.building.managerId != managerId)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
+            ViewBag.buildingId = new SelectList(
+                db.buildings.Where(b => b.managerId == managerId),
+                "buildingId",
+                "address",
+                apartment.buildingId
+            );
             ViewBag.tenantId = new SelectList(db.tenants, "tenantId", "name", apartment.tenantId);
             return View(apartment);
         }

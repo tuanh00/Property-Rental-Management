@@ -52,14 +52,6 @@
             </div>
         </div>
 
-        <div class="form-group mt-2">
-            @Html.LabelFor(model => model.managerId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("managerId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.managerId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
         <div class="form-group mt-3 mb-3">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-success" />

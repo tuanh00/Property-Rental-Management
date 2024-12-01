@@ -17,7 +17,20 @@ namespace prjRentalManagement.Controllers
         // GET: Building
         public ActionResult Index()
         {
-            var buildings = db.buildings.Include(b => b.manager).Include(b => b.owner);
+            // Check if a manager is logged in
+            if (Session["manager"] == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            int managerId = Convert.ToInt32(Session["manager"]);
+
+            // Filter buildings based on the logged-in manager
+            var buildings = db.buildings
+                              .Where(b => b.managerId == managerId)
+                              .Include(b => b.manager)
+                              .Include(b => b.owner);
+
             return View(buildings.ToList());
         }
 
@@ -76,18 +89,28 @@ namespace prjRentalManagement.Controllers
         {
             if (Session["manager"] == null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            // Find the building
             building building = db.buildings.Find(id);
             if (building == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", building.managerId);
+
+            // Ensure the building belongs to the logged-in manager
+            int managerId = Convert.ToInt32(Session["manager"]);
+            if (building.managerId != managerId)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
+            // Populate owner dropdown
             ViewBag.ownerId = new SelectList(db.owners, "ownerId", "name", building.ownerId);
             return View(building);
         }
@@ -101,15 +124,23 @@ namespace prjRentalManagement.Controllers
         {
             if (Session["manager"] == null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
+
+            // Get the manager ID from session
+            int managerId = Convert.ToInt32(Session["manager"]);
+
             if (ModelState.IsValid)
             {
+                // Ensure the manager ID is not editable
+                building.managerId = managerId;
+
                 db.Entry(building).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.managerId = new SelectList(db.managers, "managerId", "name", building.managerId);
+
+            // Repopulate the owner dropdown if validation fails
             ViewBag.ownerId = new SelectList(db.owners, "ownerId", "name", building.ownerId);
             return View(building);
         }
