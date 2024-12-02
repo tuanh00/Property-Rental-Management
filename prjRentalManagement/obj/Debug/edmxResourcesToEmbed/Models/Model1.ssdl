@@ -20,6 +20,7 @@
     <Property Name="managerId" Type="int" Nullable="false" />
     <Property Name="tenantId" Type="int" Nullable="false" />
     <Property Name="appointmentDate" Type="datetime" Nullable="false" />
+    <Property Name="description" Type="nvarchar" MaxLength="255" Nullable="false" />
   </EntityType>
   <EntityType Name="building">
     <Key>
@@ -83,7 +84,7 @@
     <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
     <Property Name="email" Type="nvarchar" MaxLength="50" Nullable="false" />
     <Property Name="password" Type="nvarchar" MaxLength="64" Nullable="false" />
-    <Property Name="phoneNumber" Type="nvarchar" MaxLength="15" Nullable="false" />
+    <Property Name="phoneNumber" Type="nvarchar" MaxLength="10" Nullable="false" />
   </EntityType>
   <EntityType Name="tenant">
     <Key>
@@ -93,7 +94,7 @@
     <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
     <Property Name="email" Type="nvarchar" MaxLength="50" Nullable="false" />
     <Property Name="password" Type="nvarchar" MaxLength="64" Nullable="false" />
-    <Property Name="phoneNumber" Type="nvarchar" MaxLength="15" Nullable="false" />
+    <Property Name="phoneNumber" Type="nvarchar" MaxLength="10" Nullable="false" />
   </EntityType>
   <Association Name="FK_apartment_building">
     <End Role="building" Type="Self.building" Multiplicity="1" />

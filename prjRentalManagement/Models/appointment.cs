@@ -12,7 +12,6 @@ namespace prjRentalManagement.Models
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-
     public partial class appointment
     {
         public int appointmentId { get; set; }
@@ -21,6 +20,10 @@ namespace prjRentalManagement.Models
 
         [Display(Name = "Appointment Date")]
         public System.DateTime appointmentDate { get; set; }
+
+        [Required(ErrorMessage = "Description is required.")]
+        [Display(Name = "Description")]
+        public string description { get; set; }
     
         public virtual manager manager { get; set; }
         public virtual tenant tenant { get; set; }

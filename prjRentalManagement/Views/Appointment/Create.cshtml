@@ -44,6 +44,14 @@
         </div>
     </div>
 
+    <!-- Appointment Description -->
+    <div class="form-group mt-2">
+        @Html.LabelFor(model => model.description, "Description", htmlAttributes: new { @class = "control-label col-md-2 fw-bold" })
+        <div class="col-md-10 mt-2">
+            @Html.TextAreaFor(model => model.description, new { @class = "form-control", rows = 3 })
+            @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
+        </div>
+    </div>
 
     <div class="form-group mt-3 mb-3">
         <div class="col-md-offset-2 col-md-10">

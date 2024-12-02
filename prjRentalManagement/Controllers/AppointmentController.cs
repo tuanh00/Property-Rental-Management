@@ -78,7 +78,7 @@ namespace prjRentalManagement.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "appointmentId,managerId,tenantId,appointmentDate")] appointment appointment)
+        public ActionResult Create([Bind(Include = "appointmentId,managerId,tenantId,appointmentDate,description")] appointment appointment)
         {
             if (Session["manager"] != null)
             {
@@ -163,7 +163,7 @@ namespace prjRentalManagement.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "appointmentId,managerId,tenantId,appointmentDate")] appointment appointment)
+        public ActionResult Edit([Bind(Include = "appointmentId,managerId,tenantId,appointmentDate,description")] appointment appointment)
         {
             if (Session["manager"] != null)
             {

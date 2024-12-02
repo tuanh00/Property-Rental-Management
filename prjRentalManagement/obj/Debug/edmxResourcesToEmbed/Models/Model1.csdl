@@ -25,6 +25,7 @@
     <Property Name="appointmentDate" Type="DateTime" Nullable="false" Precision="3" />
     <NavigationProperty Name="manager" Relationship="Self.FK_appointment_manager" FromRole="appointment" ToRole="manager" />
     <NavigationProperty Name="tenant" Relationship="Self.FK_appointment_tenant" FromRole="appointment" ToRole="tenant" />
+    <Property Name="description" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="building">
     <Key>
@@ -88,7 +89,7 @@
     <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
     <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
     <Property Name="password" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-    <Property Name="phoneNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="phoneNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
     <NavigationProperty Name="buildings" Relationship="Self.FK_building_owner" FromRole="owner" ToRole="building" />
     <NavigationProperty Name="messageOwners" Relationship="Self.FK_messageOwner_owner" FromRole="owner" ToRole="messageOwner" />
     <NavigationProperty Name="eventOwners" Relationship="DbPropertyRentalModel.FK_eventOwner_owner" FromRole="owner" ToRole="eventOwner" />
@@ -101,7 +102,7 @@
     <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
     <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
     <Property Name="password" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-    <Property Name="phoneNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="phoneNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
     <NavigationProperty Name="apartments" Relationship="Self.FK_apartment_tenant" FromRole="tenant" ToRole="apartment" />
     <NavigationProperty Name="appointments" Relationship="Self.FK_appointment_tenant" FromRole="tenant" ToRole="appointment" />
     <NavigationProperty Name="messageManagers" Relationship="Self.FK_messageManager_tenant" FromRole="tenant" ToRole="messageManager" />

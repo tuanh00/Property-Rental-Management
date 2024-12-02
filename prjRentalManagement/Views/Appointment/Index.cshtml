@@ -16,6 +16,7 @@
     <thead>
         <tr>
             <th>@Html.DisplayNameFor(model => model.appointmentDate)</th>
+            <th>@Html.DisplayNameFor(model => model.description)</th>
             @if (Session["manager"] == null)
             {
                 <th>@Html.DisplayNameFor(model => model.manager.name)</th>
@@ -35,6 +36,7 @@
             {
                 <tr>
                     <td>@Html.DisplayFor(modelItem => item.appointmentDate)</td>
+                    <td>@Html.DisplayFor(modelItem => item.description)</td>
                     @if (Session["manager"] == null)
                     {
                         <td>@Html.DisplayFor(modelItem => item.manager.name)</td>
@@ -52,18 +54,20 @@
             // Show appointments for logged-in manager
             foreach (var item in Model.Where(i => i.managerId == Convert.ToInt32(Session["manager"])))
             {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => item.appointmentDate)</td>
-                    @if (Session["tenant"] == null)
-                    {
-                        <td>@Html.DisplayFor(modelItem => item.tenant.name)</td>
-                    }
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.appointmentId }, new { @class = "btn btn-warning btn-sm" }) |
-                        @Html.ActionLink("Details", "Details", new { id = item.appointmentId }, new { @class = "btn btn-info btn-sm" }) |
-                        @Html.ActionLink("Delete", "Delete", new { id = item.appointmentId }, new { @class = "btn btn-danger btn-sm" })
-                    </td>
-                </tr>
+    <tr>
+        <td>@Html.DisplayFor(modelItem => item.appointmentDate)</td>
+        <td>@Html.DisplayFor(modelItem => item.description)</td>
+
+        @if (Session["tenant"] == null)
+        {
+            <td>@Html.DisplayFor(modelItem => item.tenant.name)</td>
+        }
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.appointmentId }, new { @class = "btn btn-warning btn-sm" }) |
+            @Html.ActionLink("Details", "Details", new { id = item.appointmentId }, new { @class = "btn btn-info btn-sm" }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.appointmentId }, new { @class = "btn btn-danger btn-sm" })
+        </td>
+    </tr>
             }
         }
     </tbody>

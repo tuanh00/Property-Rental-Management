@@ -17,6 +17,7 @@
     <EntitySetMapping Name="appointments">
       <EntityTypeMapping TypeName="DbPropertyRentalModel.appointment">
         <MappingFragment StoreEntitySet="appointment">
+          <ScalarProperty Name="description" ColumnName="description" />
           <ScalarProperty Name="appointmentId" ColumnName="appointmentId" />
           <ScalarProperty Name="managerId" ColumnName="managerId" />
           <ScalarProperty Name="tenantId" ColumnName="tenantId" />
