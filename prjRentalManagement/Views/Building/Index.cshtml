@@ -77,16 +77,18 @@ else
                     @Html.DisplayFor(modelItem => item.owner.name)
                 </td>
                 <td>
-                    @if (Session["owner"] != null)
+                    @if (Session["manager"] != null)
                     {
+                        // Manager: Show all action buttons (Edit, Details, Delete)
                         @Html.ActionLink("Edit", "Edit", new { id = item.buildingId }, new { @class = "btn btn-warning btn-sm" })
                         @: |
                         @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" })
                         @: |
                         @Html.ActionLink("Delete", "Delete", new { id = item.buildingId }, new { @class = "btn btn-danger btn-sm" })
                     }
-                    else if (Session["manager"] != null)
+                    else if (Session["owner"] != null)
                     {
+                        // Owner: Show only the "Details" button
                         @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" })
                     }
                 </td>
