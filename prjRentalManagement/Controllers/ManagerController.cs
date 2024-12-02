@@ -90,16 +90,29 @@ namespace prjRentalManagement.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+
+            // Check if the email already exists in the database
+            if (db.managers.Any(m => m.email == manager.email))
+            {
+                // Add a custom error message to the ModelState
+                ModelState.AddModelError("email", "This email is already in use. Please use a different email.");
+            }
+
+            // Proceed only if the ModelState is valid
             if (ModelState.IsValid)
             {
-                //Hash the password 
+                // Hash the password
                 manager.password = ComputeSha256Hash(manager.password);
 
+                // Save the manager to the database
                 db.managers.Add(manager);
                 db.SaveChanges();
+
+                // Redirect to the Manager Access page or any other appropriate action
                 return RedirectToAction("Index", "ManagerAccess");
             }
 
+            // If validation fails, return to the Create view with the current data
             return View(manager);
         }
 
