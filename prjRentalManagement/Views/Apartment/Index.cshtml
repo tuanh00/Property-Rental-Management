@@ -89,20 +89,24 @@ else
             <td>
                 @Html.DisplayFor(modelItem => item.building.postalCode)
             </td>
-            @if (Session["manager"] != null)
-            {
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.apartmentId }, new { @class = "btn btn-warning btn-sm" }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId }, new { @class = "btn btn-info btn-sm" }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.apartmentId }, new { @class = "btn btn-danger btn-sm" })
-                </td>
-            }
-            else
-            {
-                <td>
+            <td>
+                @if (Session["tenant"] != null)
+                {
                     @Html.ActionLink("Details", "Details", new { id = item.apartmentId }, new { @class = "btn btn-info btn-sm" })
-                </td>
-            }
+                }
+                else if (Session["manager"] != null)
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.apartmentId }, new { @class = "btn btn-warning btn-sm" })
+                    @: |
+                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId }, new { @class = "btn btn-info btn-sm" })
+                    @: |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.apartmentId }, new { @class = "btn btn-danger btn-sm" })
+                }
+                else if (Session["owner"] != null)
+                {
+                    @Html.ActionLink("Details", "Details", new { id = item.apartmentId }, new { @class = "btn btn-info btn-sm" })
+                }
+            </td>
         </tr>
     }
 </table>

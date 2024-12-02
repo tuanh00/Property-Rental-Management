@@ -77,7 +77,7 @@ else
                     @Html.DisplayFor(modelItem => item.owner.name)
                 </td>
                 <td>
-                    @if (Session["manager"] != null)
+                    @if (Session["owner"] != null)
                     {
                         @Html.ActionLink("Edit", "Edit", new { id = item.buildingId }, new { @class = "btn btn-warning btn-sm" })
                         @: |
@@ -85,7 +85,7 @@ else
                         @: |
                         @Html.ActionLink("Delete", "Delete", new { id = item.buildingId }, new { @class = "btn btn-danger btn-sm" })
                     }
-                    else if (Session["owner"] != null)
+                    else if (Session["manager"] != null)
                     {
                         @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" })
                     }

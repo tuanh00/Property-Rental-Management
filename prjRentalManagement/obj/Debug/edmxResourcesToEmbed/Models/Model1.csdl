@@ -8,7 +8,7 @@
     <Property Name="apartmentNo" Type="Int32" Nullable="false" />
     <Property Name="nbRooms" Type="Int32" Nullable="false" />
     <Property Name="price" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
-    <Property Name="status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="status" Type="String" MaxLength="11" FixedLength="false" Unicode="true" Nullable="false" />
     <Property Name="buildingId" Type="Int32" Nullable="false" />
     <Property Name="tenantId" Type="Int32" />
     <NavigationProperty Name="building" Relationship="Self.FK_apartment_building" FromRole="apartment" ToRole="building" />

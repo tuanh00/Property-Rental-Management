@@ -17,28 +17,34 @@ namespace prjRentalManagement.Controllers
         // GET: Apartment
         public ActionResult Index(string search)
         {
-            // Ensure a session is active for tenants or managers
+            // Ensure a session is active for tenants, managers, or owners
             if (Session["manager"] == null && Session["tenant"] == null && Session["owner"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
 
             IQueryable<apartment> apartments = db.apartments
-                   .Include(a => a.building)
-                   .Include(a => a.tenant);
+                .Include(a => a.building)
+                .Include(a => a.tenant);
 
             if (Session["manager"] != null)
             {
-                // If a manager is logged in, show apartments related to their managed buildings
+                // Manager: Only view apartments in their assigned buildings
                 int managerId = Convert.ToInt32(Session["manager"]);
                 apartments = apartments.Where(a => a.building.managerId == managerId);
             }
-            else
+            else if (Session["tenant"] != null)
             {
-                // If a tenant/owner are logged in, show all apartments
-                apartments = db.apartments
-                    .Include(a => a.building)
-                    .Include(a => a.tenant);
+                // Tenant: View "Available" apartments and those assigned to them
+                int tenantId = Convert.ToInt32(Session["tenant"]);
+                apartments = apartments.Where(a => (a.status == "Available" || a.tenantId == tenantId));
+            }
+            else if (Session["owner"] != null)
+            {
+                int ownerId = Convert.ToInt32(Session["owner"]);
+
+                // Filter apartments based on buildings owned by the owner
+                apartments = apartments.Where(a => a.building.ownerId == ownerId);
             }
 
             // Apply search filter if provided
