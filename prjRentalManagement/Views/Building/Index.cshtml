@@ -24,66 +24,75 @@
         @Html.ActionLink("Create New Building", "Create", null, new { @class = "btn btn-primary" })
     </p>
 }
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.address)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.city)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.province)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.postalCode)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.manager.name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.owner.name)
-        </th>
-        <th>Actions</th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        <strong>No assigned buildings found!</strong> There are currently no assigned buildings to display. Please check back later or refine your search.
+    </div>
+}
+else
+{
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.city)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.province)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.postalCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.manager.name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.owner.name)
-            </td>
-            <td>
-                @if (Session["manager"] != null)
-                {
-                    @Html.ActionLink("Edit", "Edit", new { id = item.buildingId }, new { @class = "btn btn-warning btn-sm" }) 
-                    @: |
-                    @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" }) 
-                    @: |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.buildingId }, new { @class = "btn btn-danger btn-sm" })
-                }
-            else if (Session["owner"] != null)
-            {
-            @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" })
-            }
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.city)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.province)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.postalCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.manager.name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.owner.name)
+            </th>
+            <th>Actions</th>
         </tr>
-    }
 
-</table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.city)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.province)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.postalCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.manager.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.owner.name)
+                </td>
+                <td>
+                    @if (Session["manager"] != null)
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = item.buildingId }, new { @class = "btn btn-warning btn-sm" })
+                        @: |
+                        @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" })
+                        @: |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.buildingId }, new { @class = "btn btn-danger btn-sm" })
+                    }
+                    else if (Session["owner"] != null)
+                    {
+                        @Html.ActionLink("Details", "Details", new { id = item.buildingId }, new { @class = "btn btn-info btn-sm" })
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+

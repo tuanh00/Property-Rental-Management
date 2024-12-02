@@ -25,6 +25,14 @@
         @Html.ActionLink("Create New Apartment", "Create", null, new { @class = "btn btn-primary" })
     </p>
 }
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        <strong>No assigned apartments found!</strong> There are currently no assigned apartments to display. Please check back later or refine your search.
+    </div>
+}
+else
+            {
 <table class="table">
     <tr>
         <th>
@@ -51,7 +59,7 @@
         <th>
             @Html.DisplayNameFor(model => model.building.postalCode)
         </th>
-            <th>Actions</th>
+        <th>Actions</th>
     </tr>
 
     @foreach (var item in Model)
@@ -98,3 +106,5 @@
         </tr>
     }
 </table>
+            }
+

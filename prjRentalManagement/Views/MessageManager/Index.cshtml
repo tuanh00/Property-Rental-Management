@@ -20,7 +20,14 @@
         @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-primary" })
     </p>
 }
-
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        <strong>No messages found!</strong> There are no messages to display at the moment.
+    </div>
+}
+else
+            {
 <table class="table">
     <tr>
         <th>@Html.DisplayNameFor(model => model.message)</th>
@@ -92,3 +99,5 @@
         }
     }
 </table>
+            }
+
