@@ -214,6 +214,22 @@ namespace prjRentalManagement.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             apartment apartment = db.apartments.Find(id);
+            if (apartment == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Check for related data in dependent tables
+            bool hasEvents = db.eventOwners.Any(e => e.apartmentId == id);
+
+            // If any related data exists, return an error message to the user
+            if (hasEvents)
+            {
+                TempData["ErrorMessage"] = "This apartment cannot be deleted because there are related events in the system. Please delete related events first.";
+                return RedirectToAction("Delete", new { id });
+            }
+
+            // Proceed to delete the apartment if no related records exist
             db.apartments.Remove(apartment);
             db.SaveChanges();
             return RedirectToAction("Index");

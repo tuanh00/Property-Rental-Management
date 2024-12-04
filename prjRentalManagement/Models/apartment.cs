@@ -29,7 +29,7 @@ namespace prjRentalManagement.Models
         public int apartmentNo { get; set; }
 
         [Required(ErrorMessage = "Number of rooms is required.")]
-        [Range(1, 300, ErrorMessage = "The number of rooms must be between 1 and 300.")]
+        [Range(1, 10, ErrorMessage = "The number of rooms must be between 1 and 10.")]
         [Display(Name = "Number of rooms")]
         public int nbRooms { get; set; }
 

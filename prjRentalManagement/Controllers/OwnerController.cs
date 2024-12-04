@@ -180,7 +180,26 @@ namespace prjRentalManagement.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+            // Find the owner
             owner owner = db.owners.Find(id);
+            if (owner == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Check for related data in dependent tables
+            bool hasBuildings = db.buildings.Any(b => b.ownerId == id);
+            bool hasEvents = db.eventOwners.Any(e => e.ownerId == id);
+            bool hasMessages = db.messageOwners.Any(m => m.ownerId == id);
+
+            // If any related data exists, return an error message to the user
+            if (hasBuildings || hasEvents || hasMessages)
+            {
+                TempData["ErrorMessage"] = "This owner cannot be deleted because there are related records in the system. Please delete related buildings, events, or messages first.";
+                return RedirectToAction("Delete", new { id });
+            }
+
+            // Proceed to delete the owner if no related records exist
             db.owners.Remove(owner);
             db.SaveChanges();
             Session.Clear();

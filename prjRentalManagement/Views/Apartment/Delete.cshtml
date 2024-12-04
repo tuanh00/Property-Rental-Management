@@ -4,6 +4,14 @@
 }
 
 <h2>Delete Apartment</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <h3>Are you sure you want to delete this?</h3>
 <div>
     <hr />
